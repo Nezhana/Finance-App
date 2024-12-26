@@ -18,7 +18,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -101,14 +101,16 @@ fun CourseInfoContent(
 
     val content = @Composable{
         if (token != null) {
-            DisposableEffect(Unit) {
+            LaunchedEffect(Unit) {
                 getRates()
+            }
 
+            LaunchedEffect(rates.value) {
                 ratesArray.value = Rates::class.memberProperties.map { property ->
                     property.name to (property.get(rates.value.rates) as Number)
                 }.toTypedArray()
 
-                onDispose { }
+                Log.d("debug", "ratesArray updated: ${ratesArray.value.contentToString()}")
             }
 
             Box() {
@@ -192,6 +194,13 @@ fun CourseInfoContent(
                                             text = currency.second.toString(),
                                             color = contentColor
                                         )
+                                        Text(
+                                            modifier = Modifier
+                                                .weight(0.5f)
+                                                .padding(end = 14.dp),
+                                            text = ((currency.second as? Number)?.toInt()?.plus(0.43)?.toString() ?: "N/A"),
+                                            color = contentColor
+                                        )
                                     }
                                 }
                                 HorizontalDivider(
@@ -210,9 +219,3 @@ fun CourseInfoContent(
     return content
 
 }
-
-data class CourseInfo(
-    val title: String,
-    val buy: String,
-    val sell: String
-)
