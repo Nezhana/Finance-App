@@ -64,7 +64,8 @@ import retrofit2.Response
 @OptIn(ExperimentalMaterial3Api::class)
 fun MainContent(
     userViewModel: UserViewModel,
-    categoryDetailsPage: () -> Unit
+    categoryDetailsPage: () -> Unit,
+    addRecordPage: () -> Unit
 ): @Composable () -> Unit {
 
     var content = @Composable{
@@ -248,7 +249,7 @@ fun MainContent(
                     containerColor = MaterialTheme.colorScheme.background,
                     floatingActionButton = {
                         FloatingActionButton(
-                            onClick = { /* do something */ },
+                            onClick = addRecordPage,
                             shape = CircleShape,
                             containerColor = MaterialTheme.colorScheme.secondary,
                             contentColor = MaterialTheme.colorScheme.onSecondary,

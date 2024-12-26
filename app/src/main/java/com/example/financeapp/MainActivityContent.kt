@@ -79,7 +79,8 @@ fun MainActivityContent() {
                 composable(route = Routes.MAIN_PAGE.name) {
                     val content = MainContent(
                         userViewModel = userViewModel,
-                        categoryDetailsPage = { navController.navigate(route = Routes.CATEGORY_DETAILS.name )},)
+                        categoryDetailsPage = { navController.navigate(route = Routes.CATEGORY_DETAILS.name )},
+                        addRecordPage = { navController.navigate(route = Routes.ADD_RECORD.name )})
                     Drawer(content, navController)
                 }
                 composable(route = Routes.CATEGORY_DETAILS.name) {

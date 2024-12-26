@@ -7,6 +7,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateOffsetAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
@@ -84,6 +85,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
@@ -946,6 +950,27 @@ fun YearPicker(
     }
 }
 
+// ----------------------------------
+
+@Composable
+fun CircleStatistics() {
+    Canvas(
+        modifier = Modifier.size(300.dp).background(Color.Gray),
+        onDraw = {
+            drawArc(
+                color = Color.Red,
+                startAngle = 0f,
+                sweepAngle = 90f,
+                useCenter = false,
+                style = Stroke(
+                    width = 4f,
+                    cap = StrokeCap.Round,
+                    join = StrokeJoin.Round
+                )
+            )
+        }
+    )
+}
 
 // ----------------------------------
 

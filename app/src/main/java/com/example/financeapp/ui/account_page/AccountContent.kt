@@ -309,34 +309,34 @@ fun AccountContent(
                         }
                         HorizontalDivider(color = Color(0xFF222831))
 
-                        Row(
-                            modifier = infoRowModifier,
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                        ) {
-                            Text(text = "Пароль", color = contentColorConst)
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                            ) {
-                                Text(text = "3gsif9slf3", color = contentColor)
-                                IconButton(onClick = { openEditPassDialog = true }) {
-                                    Icon(
-                                        Icons.Filled.Edit,
-                                        "Edit password",
-                                        tint = contentColor)
-                                }
-                            }
-                            if(openEditPassDialog) {
-                                editPassDialog()
-                            } else {
-                                if(password != "") {
-                                    Log.d("debug", password)
-//                                    editPassword(password)
-                                }
-                            }
-                        }
-                        HorizontalDivider(color = Color(0xFF222831))
+//                        Row(
+//                            modifier = infoRowModifier,
+//                            verticalAlignment = Alignment.CenterVertically,
+//                            horizontalArrangement = Arrangement.SpaceBetween,
+//                        ) {
+//                            Text(text = "Пароль", color = contentColorConst)
+//                            Row(
+//                                verticalAlignment = Alignment.CenterVertically,
+//                                horizontalArrangement = Arrangement.SpaceBetween,
+//                            ) {
+//                                Text(text = "3gsif9slf3", color = contentColor)
+//                                IconButton(onClick = { openEditPassDialog = true }) {
+//                                    Icon(
+//                                        Icons.Filled.Edit,
+//                                        "Edit password",
+//                                        tint = contentColor)
+//                                }
+//                            }
+//                            if(openEditPassDialog) {
+//                                editPassDialog()
+//                            } else {
+//                                if(password != "") {
+//                                    Log.d("debug", password)
+////                                    editPassword(password)
+//                                }
+//                            }
+//                        }
+//                        HorizontalDivider(color = Color(0xFF222831))
 
                         Row(
                             modifier = infoRowModifier,

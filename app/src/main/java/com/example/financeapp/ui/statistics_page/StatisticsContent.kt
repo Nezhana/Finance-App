@@ -56,6 +56,7 @@ import com.example.financeapp.models.responses.CurrentBalanceCategoriesResponse
 import com.example.financeapp.models.responses.CurrentBalanceResponse
 import com.example.financeapp.services.RetrofitClient
 import com.example.financeapp.ui.Drawer
+import com.example.financeapp.ui.theme.CircleStatistics
 import com.example.financeapp.ui.theme.CustomCategoryCard
 import com.example.financeapp.ui.theme.CustomChipSelector
 import com.example.financeapp.ui.theme.MonthPicker
@@ -96,7 +97,7 @@ fun StatisticsContent(
 
 
             Column(
-                modifier = Modifier.padding(40.dp, 100.dp),
+                modifier = Modifier.padding(40.dp, 80.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             )
@@ -111,6 +112,7 @@ fun StatisticsContent(
                     // selected_type = "Дохід" or "Витрати" - need to convert to income/expense
                     selected_type = CustomChipSelector(Modifier, "Дохід", "/", "Витрати")
                 }
+
                 Column(
                     Modifier
                         .fillMaxWidth()
@@ -173,6 +175,8 @@ fun StatisticsContent(
                     }
 
                 }
+
+                CircleStatistics()
             }
         }
     }

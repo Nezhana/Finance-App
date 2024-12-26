@@ -4,8 +4,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -76,6 +78,7 @@ fun Drawer(
         MenuRoutes(name = "Акаунт", route = { navController.navigate(route = Routes.ACCOUNT.name) }),
         MenuRoutes(name = "Баланс", route = { navController.navigate(route = Routes.MAIN_PAGE.name) }),
         MenuRoutes(name = "Додати запис", route = { navController.navigate(route = Routes.ADD_RECORD.name) }),
+        MenuRoutes(name = "Додати категорію", route = { navController.navigate(route = Routes.ADD_CATEGORY.name) }),
         MenuRoutes(name = "Статистика", route = { navController.navigate(route = Routes.STATISTICS.name) }),
         MenuRoutes(name = "Курси валют", route = { navController.navigate(route = Routes.COURSE.name) }),
         MenuRoutes(name = "Група", route = { navController.navigate(route = Routes.GROUP.name) }),)
@@ -104,15 +107,16 @@ fun Drawer(
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
-                Text(
-                    text = "Username",
-                    modifier = Modifier.padding(16.dp),
-                    color = MaterialTheme.colorScheme.primary
-                )
-                HorizontalDivider(
-                    thickness = 2.dp,
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
+//                Text(
+//                    text = "Username",
+//                    modifier = Modifier.padding(16.dp),
+//                    color = MaterialTheme.colorScheme.primary
+//                )
+//                HorizontalDivider(
+//                    thickness = 2.dp,
+//                    color = MaterialTheme.colorScheme.onPrimary
+//                )
+                Spacer(Modifier.height(40.dp))
                 items.forEach { item ->
                     NavigationDrawerItem(
                         modifier = Modifier.padding(horizontal = 10.dp),
