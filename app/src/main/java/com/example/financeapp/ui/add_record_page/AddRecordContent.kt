@@ -120,9 +120,10 @@ fun AddRecordContent(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceEvenly,
                     ) {
-                        var selected by remember { mutableStateOf(false) }
+                        var selected by remember { mutableStateOf("") }
 
-                        CustomChipSelector(Modifier, "Дохід", "/", "Витрати")
+                        // selected = "Дохід" or "Витрати" - need to convert to income/expense
+                        selected = CustomChipSelector(Modifier, "Дохід", "/", "Витрати")
 
                     }
                     Row (

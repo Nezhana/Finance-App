@@ -2,14 +2,22 @@ package com.example.financeapp.ui.theme
 
 import android.util.Log
 import android.util.MutableBoolean
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateOffsetAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -23,6 +31,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -31,10 +40,15 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ElevatedCard
@@ -45,9 +59,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SelectableChipColors
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -56,12 +74,14 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventPass
@@ -92,8 +112,9 @@ fun CustomChipSelector(
     modifier: Modifier,
     option1Text: String,
     separator: String,
-    option2Text: String
-) {
+    option2Text: String,
+    fontSize: TextUnit = 30.sp
+) :String {
     var selected1 by remember { mutableStateOf(false) }
     var selected2 by remember { mutableStateOf(true) }
     val activeTextColor = MaterialTheme.colorScheme.onSecondary
@@ -112,7 +133,7 @@ fun CustomChipSelector(
             selected2 = !selected2
           },
         label = {
-            Text(option1Text, color = if(selected1) {activeTextColor} else {inactiveTextColor}, fontSize = 30.sp)
+            Text(option1Text, color = if(selected1) {activeTextColor} else {inactiveTextColor}, fontSize = fontSize)
         },
         selected = selected1,
         colors = chipColors,
@@ -121,7 +142,7 @@ fun CustomChipSelector(
             true)
     )
 
-    Text(text = separator, color = Color(0xFF00ADB5), fontSize = 30.sp)
+    Text(text = separator, color = Color(0xFF00ADB5), fontSize = fontSize)
 
     FilterChip(
         selected = !selected2,
@@ -130,13 +151,20 @@ fun CustomChipSelector(
             selected2 = !selected2
         },
         label = {
-            Text(option2Text, color = if(selected2) {activeTextColor} else {inactiveTextColor}, fontSize = 30.sp)
+            Text(option2Text, color = if(selected2) {activeTextColor} else {inactiveTextColor}, fontSize = fontSize)
         },
         colors = chipColors,
         border = FilterChipDefaults.filterChipBorder(
             true,
             true)
     )
+
+    if(selected1){
+        return option1Text
+    } else {
+        return option2Text
+    }
+
 }
 
 // ----------------------------------
@@ -169,6 +197,40 @@ fun CustomTitleInknutAntiquaFont(
         fontFamily = additionalFontFamily,
         color = MaterialTheme.colorScheme.primary
     )
+}
+
+// ----------------------------------
+
+@Composable
+fun SingleChoiceSegmentedButton(
+    modifier: Modifier = Modifier,
+    itemList: List<String>
+) :Int{
+    var selectedIndex by remember { mutableIntStateOf(0) }
+//    val options = listOf("Day", "Month", "Week")
+
+    SingleChoiceSegmentedButtonRow {
+        itemList.forEachIndexed { index, label ->
+            SegmentedButton(
+                shape = SegmentedButtonDefaults.itemShape(
+                    index = index,
+                    count = itemList.size
+                ),
+                onClick = { selectedIndex = index },
+                selected = index == selectedIndex,
+                label = { Text(label) },
+                colors = SegmentedButtonDefaults.colors(
+                    activeContainerColor = MaterialTheme.colorScheme.secondary,
+                    activeContentColor = MaterialTheme.colorScheme.onSecondary,
+                    activeBorderColor = MaterialTheme.colorScheme.primaryContainer,
+                    inactiveContainerColor = MaterialTheme.colorScheme.background,
+                    inactiveContentColor = MaterialTheme.colorScheme.primaryContainer,
+                    inactiveBorderColor = MaterialTheme.colorScheme.primaryContainer
+                )
+            )
+        }
+    }
+    return selectedIndex
 }
 
 // ----------------------------------
@@ -463,6 +525,427 @@ fun CustomCategoryCard(
         }
     }
 }
+
+
+// ----------------------------------
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@Composable
+fun MonthPicker(
+    visible: Boolean,
+    currentMonth: Int,
+    currentYear: Int,
+    confirmButtonCLicked: (Int, Int) -> Unit,
+    cancelClicked: () -> Unit
+) {
+
+    val months = listOf(
+        "січень", "лютий", "березень", "квітень", "травень", "червень",
+        "липень", "серпень", "вересень", "жовтень", "листопад", "грудень"
+    )
+
+    val yearList = listOf("2010", "2011", "2012", "2013", "2014", "2015", "2016",
+        "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024")
+
+    var month by remember {
+        mutableStateOf(months[currentMonth])
+    }
+
+    var year by remember {
+        mutableStateOf(yearList[currentYear])
+    }
+
+    val interactionSource = remember {
+        MutableInteractionSource()
+    }
+
+    if (visible) {
+
+        BasicAlertDialog(
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.primaryContainer)
+                .clip(RoundedCornerShape(25)),
+            onDismissRequest = { }
+        ) {
+            Column(
+                modifier = Modifier.clip(RoundedCornerShape(25)),
+                verticalArrangement = Arrangement.SpaceAround,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Column {
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 26.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+
+//                        if(yearList.indexOf(year) > 0) {
+                            Icon(
+                                modifier = Modifier
+                                    .size(35.dp)
+                                    .rotate(90f)
+                                    .clickable(
+                                        enabled = if(yearList.indexOf(year) > 0) {
+                                            true
+                                        } else {
+                                            false
+                                        },
+                                        indication = null,
+                                        interactionSource = interactionSource,
+                                        onClick = {
+                                            year = yearList[yearList.indexOf(year) - 1]
+                                        }
+                                    ),
+                                imageVector = Icons.Rounded.KeyboardArrowDown,
+                                contentDescription = null,
+                                tint = if(yearList.indexOf(year) > 0) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    MaterialTheme.colorScheme.background
+                                },
+//                                MaterialTheme.colorScheme.primary
+                            )
+//                        }
+
+                        Text(
+                            modifier = Modifier.padding(horizontal = 20.dp),
+                            text = year.toString(),
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+
+//                        if(yearList.indexOf(year) < yearList.size - 1) {
+                            Icon(
+                                modifier = Modifier
+                                    .size(35.dp)
+                                    .rotate(-90f)
+                                    .clickable(
+                                        enabled = if(yearList.indexOf(year) < yearList.size - 1) {
+                                            true
+                                        } else {
+                                            false
+                                        },
+                                        indication = null,
+                                        interactionSource = interactionSource,
+                                        onClick = {
+                                            year = yearList[yearList.indexOf(year) + 1]
+                                        }
+                                    ),
+                                imageVector = Icons.Rounded.KeyboardArrowDown,
+                                contentDescription = null,
+                                tint = if(yearList.indexOf(year) < yearList.size - 1) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    MaterialTheme.colorScheme.background
+                                },
+//                                MaterialTheme.colorScheme.primary
+                            )
+//                        }
+
+                    }
+
+
+                    Card(
+                        modifier = Modifier
+                            .padding(top = 30.dp)
+                            .fillMaxWidth(),
+                        elevation = CardDefaults.cardElevation(0.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.background
+                        )
+                    ) {
+
+                        FlowRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            maxItemsInEachRow = 3,
+//                            mainAxisSpacing = 16.dp,
+//                            crossAxisSpacing = 16.dp,
+                            horizontalArrangement = Arrangement.Center,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+
+                            months.forEach {
+                                Box(
+                                    modifier = Modifier
+                                        .size(80.dp)
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = interactionSource,
+                                            onClick = {
+                                                month = it
+                                            }
+                                        )
+                                        .background(
+                                            color = Color.Transparent
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+
+                                    val animatedSize by animateDpAsState(
+                                        targetValue = if (month == it) 80.dp else 0.dp,
+                                        animationSpec = tween(
+                                            durationMillis = 500,
+                                            easing = LinearOutSlowInEasing
+                                        )
+                                    )
+
+                                    Box(
+                                        modifier = Modifier
+                                            .size(animatedSize)
+                                            .background(
+                                                color = if (month == it) {
+                                                    MaterialTheme.colorScheme.primary
+                                                } else {
+                                                    Color.Transparent
+                                                },
+                                                shape = CircleShape
+                                            )
+                                    )
+
+                                    Text(
+                                        text = it,
+                                        color = if (month == it) {
+                                            MaterialTheme.colorScheme.primaryContainer
+                                        } else {
+                                            MaterialTheme.colorScheme.secondary
+                                        },
+                                        fontWeight = FontWeight.Medium
+                                    )
+
+                                }
+                            }
+
+                        }
+
+                    }
+
+                }
+
+                Spacer(Modifier.height(3.dp))
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 3.dp, bottom = 6.dp, end = 3.dp),
+                    horizontalArrangement = Arrangement.End
+                ) {
+
+                    OutlinedButton(
+                        modifier = Modifier.padding(end = 20.dp),
+                        onClick = {
+                            cancelClicked()
+                        },
+                        shape = CircleShape,
+                        border = BorderStroke(1.dp, color = Color.Transparent),
+                        colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent)
+                    ) {
+
+                        Text(
+                            text = "Cancel",
+                            color = MaterialTheme.colorScheme.primary,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+
+                    }
+
+                    OutlinedButton(
+                        modifier = Modifier.padding(end = 20.dp),
+                        onClick = {
+                            confirmButtonCLicked(
+                                months.indexOf(month),
+                                yearList.indexOf(year)
+                            )
+                        },
+                        shape = CircleShape,
+                        border = BorderStroke(1.dp, color = MaterialTheme.colorScheme.primary),
+                        colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent)
+                    ) {
+
+                        Text(
+                            text = "OK",
+                            color = MaterialTheme.colorScheme.primary,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@Composable
+fun YearPicker(
+    visible: Boolean,
+    currentYear: Int,
+    confirmButtonCLicked: (Int) -> Unit,
+    cancelClicked: () -> Unit
+) {
+
+    val yearList = listOf("2010", "2011", "2012", "2013", "2014", "2015", "2016",
+        "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024")
+
+    var year by remember {
+        mutableStateOf(yearList[currentYear])
+    }
+
+    var page by remember { mutableStateOf(1) }
+
+    val interactionSource = remember {
+        MutableInteractionSource()
+    }
+
+    if (visible) {
+
+        BasicAlertDialog(
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.primaryContainer)
+                .clip(RoundedCornerShape(25)),
+            onDismissRequest = { }
+        ) {
+            Column(
+                modifier = Modifier.clip(RoundedCornerShape(25)),
+                verticalArrangement = Arrangement.SpaceAround,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Column {
+
+                    Card(
+                        modifier = Modifier
+                            .padding(top = 30.dp)
+                            .fillMaxWidth(),
+                        elevation = CardDefaults.cardElevation(0.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.background
+                        )
+                    ) {
+
+                        FlowRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            maxItemsInEachRow = 3,
+                            horizontalArrangement = Arrangement.Center,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+
+                            yearList.forEach {
+                                Box(
+                                    modifier = Modifier
+                                        .size(60.dp)
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = interactionSource,
+                                            onClick = {
+                                                year = it
+                                            }
+                                        )
+                                        .background(
+                                            color = Color.Transparent
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+
+                                    val animatedSize by animateDpAsState(
+                                        targetValue = if (year == it) 60.dp else 0.dp,
+                                        animationSpec = tween(
+                                            durationMillis = 500,
+                                            easing = LinearOutSlowInEasing
+                                        )
+                                    )
+
+                                    Box(
+                                        modifier = Modifier
+                                            .size(animatedSize)
+                                            .background(
+                                                color = if (year == it) {
+                                                    MaterialTheme.colorScheme.primary
+                                                } else {
+                                                    Color.Transparent
+                                                },
+                                                shape = CircleShape
+                                            )
+                                    )
+
+                                    Text(
+                                        text = it,
+                                        color = if (year == it) {
+                                            MaterialTheme.colorScheme.primaryContainer
+                                        } else {
+                                            MaterialTheme.colorScheme.secondary
+                                        },
+                                        fontWeight = FontWeight.Medium
+                                    )
+
+                                }
+                            }
+
+                        }
+
+                    }
+
+                }
+
+                Spacer(Modifier.height(3.dp))
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 3.dp, bottom = 6.dp, end = 3.dp),
+                    horizontalArrangement = Arrangement.End
+                ) {
+
+                    OutlinedButton(
+                        modifier = Modifier.padding(end = 20.dp),
+                        onClick = {
+                            cancelClicked()
+                        },
+                        shape = CircleShape,
+                        border = BorderStroke(1.dp, color = Color.Transparent),
+                        colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent)
+                    ) {
+
+                        Text(
+                            text = "Cancel",
+                            color = MaterialTheme.colorScheme.primary,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+
+                    }
+
+                    OutlinedButton(
+                        modifier = Modifier.padding(end = 20.dp),
+                        onClick = {
+                            confirmButtonCLicked(
+                                yearList.indexOf(year)
+                            )
+                        },
+                        shape = CircleShape,
+                        border = BorderStroke(1.dp, color = MaterialTheme.colorScheme.primary),
+                        colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent)
+                    ) {
+
+                        Text(
+                            text = "OK",
+                            color = MaterialTheme.colorScheme.primary,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 // ----------------------------------
 

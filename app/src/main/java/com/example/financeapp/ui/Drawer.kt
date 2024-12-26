@@ -76,6 +76,7 @@ fun Drawer(
         MenuRoutes(name = "Акаунт", route = { navController.navigate(route = Routes.ACCOUNT.name) }),
         MenuRoutes(name = "Баланс", route = { navController.navigate(route = Routes.MAIN_PAGE.name) }),
         MenuRoutes(name = "Додати запис", route = { navController.navigate(route = Routes.ADD_RECORD.name) }),
+        MenuRoutes(name = "Статистика", route = { navController.navigate(route = Routes.STATISTICS.name) }),
         MenuRoutes(name = "Курси валют", route = { navController.navigate(route = Routes.COURSE.name) }),
         MenuRoutes(name = "Група", route = { navController.navigate(route = Routes.GROUP.name) }),)
     val scope = rememberCoroutineScope()
