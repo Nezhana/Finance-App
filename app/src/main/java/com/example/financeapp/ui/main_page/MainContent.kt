@@ -7,9 +7,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -41,12 +44,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.financeapp.models.responses.CurrentBalanceCategoriesResponse
 import com.example.financeapp.models.responses.CurrentBalanceResponse
 import com.example.financeapp.services.RetrofitClient
+import com.example.financeapp.ui.Drawer
+import com.example.financeapp.ui.theme.CustomCategoryCard
 import com.example.financeapp.viewmodel.UserViewModel
 import retrofit2.Call
 import retrofit2.Callback
@@ -55,10 +63,11 @@ import retrofit2.Response
 
 @OptIn(ExperimentalMaterial3Api::class)
 fun MainContent(
-    userViewModel: UserViewModel
+    userViewModel: UserViewModel,
+    categoryDetailsPage: () -> Unit
 ): @Composable () -> Unit {
 
-    val content = @Composable{
+    var content = @Composable{
 
         Box() {
             val context = LocalContext.current
@@ -142,29 +151,33 @@ fun MainContent(
                         horizontalAlignment = Alignment.CenterHorizontally
                 )
                 {
-                    Text(
-                        text = "Баланс",
-                        color = MaterialTheme.colorScheme.onSecondary,
-                        fontSize = 30.sp,
-                        modifier = Modifier.padding(0.dp, 20.dp)
-                    )
+//                    Text(
+//                        text = "Баланс",
+//                        color = MaterialTheme.colorScheme.onSecondary,
+//                        fontSize = 30.sp,
+//                        modifier = Modifier.padding(0.dp, 20.dp)
+//                    )
                     ElevatedCard(
                         elevation = CardDefaults.cardElevation(
                             defaultElevation = 6.dp
                         ),
-                        modifier = Modifier.size(width = 350.dp, height = 215.dp),
+                        modifier = Modifier
+                            .size(width = 350.dp, height = 215.dp)
+                            .offset(y = 10.dp),
                         colors = CardColors(
                             containerColor = Color(0xFF00ADB5),
                             contentColor = Color(0xFFFFFFFF),
                             disabledContainerColor = Color(0xFF00ADB5),
                             disabledContentColor = Color(0xFFFFFFFF)
                         ),
+                        shape = RoundedCornerShape(15)
                     )
                     {
                         Text(
                             text = "Актуальний місяць",
                             modifier = Modifier
-                                .padding(16.dp),
+                                .fillMaxWidth()
+                                .padding(top = 20.dp),
                             textAlign = TextAlign.Center,
                         )
                         Column(
@@ -172,7 +185,9 @@ fun MainContent(
                                 .padding(16.dp),
                             verticalArrangement = Arrangement.SpaceAround
                         ){
-                            Row(modifier = Modifier.padding(bottom = 10.dp).fillMaxWidth(),
+                            Row(modifier = Modifier
+                                .padding(bottom = 10.dp)
+                                .fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween) {
                                 Text(
                                     text= "Дохід"
@@ -181,7 +196,9 @@ fun MainContent(
                                     text= "+ ${currentBalance.incomeTotal} ₴"
                                 )
                             }
-                            Row(modifier = Modifier.padding(bottom = 10.dp).fillMaxWidth(),
+                            Row(modifier = Modifier
+                                .padding(bottom = 10.dp)
+                                .fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween) {
                                 Text(
                                     text= "Витрати"
@@ -190,56 +207,37 @@ fun MainContent(
                                     text= "- ${currentBalance.expenseTotal} ₴"
                                 )
                             }
-                            Row(modifier = Modifier.padding(bottom = 10.dp).fillMaxWidth(),
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Row(modifier = Modifier
+                                .padding(bottom = 10.dp)
+                                .fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween) {
                                 Text(
-                                    text= "Баланс"
+                                    text= "Баланс",
+                                    fontSize = 30.sp,
+                                    fontWeight = FontWeight.Bold
                                 )
                                 Text(
-                                    text= "${currentBalance.total} ₴"
+                                    text= "${currentBalance.total} ₴",
+                                    fontSize = 30.sp,
+                                    fontWeight = FontWeight.Bold
                                 )
                             }
                         }
                     }
 
                     LazyColumn(
+                        modifier = Modifier.offset(y=10.dp),
                         contentPadding = PaddingValues(top = 30.dp)
                     )
                     {
                         items(currentBalanceCategories.categories.size) { index ->
                             val item = currentBalanceCategories.categories[index]
-                            ElevatedCard(
-                                elevation = CardDefaults.cardElevation(
-                                    defaultElevation = 6.dp
-                                ),
-                                modifier = Modifier
-                                    .size(width = 350.dp, height = 57.dp)
-                                    .padding(bottom = 10.dp)
-                                    .clip(RoundedCornerShape(50)),
-                                colors = CardColors(
-                                    containerColor = Color(0xFF222831),
-                                    contentColor = Color(0xFFFFFFFF),
-                                    disabledContainerColor = Color(0xFF222831),
-                                    disabledContentColor = Color(0xFFFFFFFF)
-                                )
-                            ) {
-                                Row(
-                                    modifier = Modifier.fillMaxSize(),
-                                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        text = item.title,
-                                        modifier = Modifier.weight(1f),
-                                        textAlign = TextAlign.Center,
-                                    )
-                                    Text (
-                                        text = "${item.total} ₴",
-                                        modifier = Modifier.weight(1f),
-                                        textAlign = TextAlign.Center,
-                                    )
-                                }
-                            }
+                            CustomCategoryCard(
+                                title = item.title,
+                                total = item.total,
+                                onClick = categoryDetailsPage
+                            )
                         }
                     }
                 }
@@ -263,12 +261,8 @@ fun MainContent(
             } else {
                 Text("No token available.")
             }
-
-            
-            
         }
     }
-
 //    Drawer(content)
 
     return content

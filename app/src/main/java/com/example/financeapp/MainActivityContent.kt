@@ -1,5 +1,7 @@
 package com.example.financeapp
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -16,6 +18,7 @@ import com.example.financeapp.ui.add_record_page.AddRecordContent
 import com.example.financeapp.ui.course_page.CourseInfoContent
 import com.example.financeapp.ui.group_page.GroupContent
 import com.example.financeapp.ui.log_in_page.LogInScreen
+import com.example.financeapp.ui.main_page.CategoryDetailsContent
 import com.example.financeapp.ui.main_page.MainContent
 import com.example.financeapp.ui.password_recovery_page.PasswordRecoveryScreen
 import com.example.financeapp.ui.sign_in_page.SignInScreen
@@ -27,6 +30,7 @@ enum class Routes {
     AUTHORIZATION,
     PASSWORD_RECOVERY, // fix logic
     MAIN_PAGE,
+    CATEGORY_DETAILS,
     ACCOUNT,
     GROUP, // I
     ADD_RECORD,
@@ -72,7 +76,13 @@ fun MainActivityContent() {
                     )
                 }
                 composable(route = Routes.MAIN_PAGE.name) {
-                    val content = MainContent(userViewModel = userViewModel)
+                    val content = MainContent(
+                        userViewModel = userViewModel,
+                        categoryDetailsPage = { navController.navigate(route = Routes.CATEGORY_DETAILS.name )},)
+                    Drawer(content, navController)
+                }
+                composable(route = Routes.CATEGORY_DETAILS.name) {
+                    val content = CategoryDetailsContent(userViewModel = userViewModel)
                     Drawer(content, navController)
                 }
                 composable(route = Routes.ACCOUNT.name) {
