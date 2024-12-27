@@ -35,6 +35,7 @@ import com.example.financeapp.models.responses.CurrenciesResponse
 import com.example.financeapp.models.responses.Rates
 import com.example.financeapp.services.RetrofitClient
 import com.example.financeapp.viewmodel.UserViewModel
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -89,7 +90,10 @@ fun CourseInfoContent(
                         Log.d("debug", "Rates init: ${rates.value}")
                     }
                 } else {
-                    showMessageToUser("Error: ${response.message()}")
+                    val jsonObject = JSONObject(response.errorBody()?.string())
+                    val errorMessage = jsonObject.optString("message", "An error occurred")
+                    showMessageToUser(errorMessage)
+                    Log.d("debug", "Editing name failed: ${jsonObject}")
                 }
             }
 
