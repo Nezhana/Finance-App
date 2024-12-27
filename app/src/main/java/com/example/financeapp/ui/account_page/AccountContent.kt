@@ -23,7 +23,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -33,9 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,6 +43,7 @@ import com.example.financeapp.services.RetrofitClient
 import com.example.financeapp.ui.theme.ChangeValueDialog
 import com.example.financeapp.ui.theme.CustomTextInknutAntiquaFont
 import com.example.financeapp.viewmodel.UserViewModel
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -87,10 +86,7 @@ fun AccountContent(
             }
 
             var name by remember { mutableStateOf("") }
-            var password by remember { mutableStateOf("") }
-
             var openEditNameDialog by remember { mutableStateOf(false) }
-            var openEditPassDialog by remember { mutableStateOf(false) }
 
 
             fun showMessageToUser(message: String) {
@@ -116,7 +112,10 @@ fun AccountContent(
                                 showMessageToUser("Name updated successfully!")
                             }
                         } else {
-                            showMessageToUser("Error: ${response.message()}")
+                            val jsonObject = JSONObject(response.errorBody()?.string())
+                            val errorMessage = jsonObject.optString("message", "An error occurred")
+                            showMessageToUser(errorMessage)
+                            Log.d("debug", "Editing name failed: ${jsonObject}")
                         }
                     }
 
@@ -126,14 +125,8 @@ fun AccountContent(
                 })
             }
 
-            fun editCurrency(newCurrency: String){
-                val request = UpdateUserRequest(
-                    name = user.value.user.name,
-                    currency = newCurrency,
-                    role = user.value.user.role
-                )
-
-                val call = apiService.updateUserData("Bearer $token", request)
+            fun getUserData() {
+                val call = apiService.getUserData("Bearer $token")
                 call.enqueue(object : Callback<UserDataResponse> {
                     override fun onResponse(
                         call: Call<UserDataResponse>,
@@ -142,10 +135,12 @@ fun AccountContent(
                         if (response.isSuccessful) {
                             response.body()?.let { responseBody ->
                                 user.value = responseBody
-                                showMessageToUser("Currency updated successfully!")
                             }
                         } else {
-                            showMessageToUser("Error: ${response.message()}")
+                            val jsonObject = JSONObject(response.errorBody()?.string())
+                            val errorMessage = jsonObject.optString("message", "An error occurred")
+                            showMessageToUser(errorMessage)
+                            Log.d("debug", "Fetching user data failed: ${jsonObject}")
                         }
                     }
 
@@ -167,7 +162,10 @@ fun AccountContent(
                             showMessageToUser("User logouted successfully!")
                             logout()
                         } else {
-                            showMessageToUser("Error: ${response.message()}")
+                            val jsonObject = JSONObject(response.errorBody()?.string())
+                            val errorMessage = jsonObject.optString("message", "An error occurred")
+                            showMessageToUser(errorMessage)
+                            Log.d("debug", "Logout failed: ${jsonObject}")
                         }
                     }
 
@@ -189,7 +187,10 @@ fun AccountContent(
                             showMessageToUser("Account deleted successfully!")
                             deleted()
                         } else {
-                            showMessageToUser("Error: ${response.message()}")
+                            val jsonObject = JSONObject(response.errorBody()?.string())
+                            val errorMessage = jsonObject.optString("message", "An error occurred")
+                            showMessageToUser(errorMessage)
+                            Log.d("debug", "Deleting account failed: ${jsonObject}")
                         }
                     }
 
@@ -202,7 +203,6 @@ fun AccountContent(
             @Composable
             fun editNameDialog(){
                 when {
-                    // ...
                     openEditNameDialog -> {
                         name = ChangeValueDialog(
                         onDismissRequest = { openEditNameDialog = false },
@@ -213,44 +213,10 @@ fun AccountContent(
                 }
             }
 
-            @Composable
-            fun editPassDialog(){
-                when {
-                    // ...
-                    openEditPassDialog -> {
-                        password = ChangeValueDialog(
-                            onDismissRequest = { openEditPassDialog = false },
-                            label = "Зміна паролю користувача",
-                            placeholder = "Новий пароль"
-                        )
-                    }
-                }
-            }
-
             if( token != null ) {
                 DisposableEffect(Unit) {
-                    val call = apiService.getUserData("Bearer $token")
-                    call.enqueue(object : Callback<UserDataResponse> {
-                        override fun onResponse(
-                            call: Call<UserDataResponse>,
-                            response: Response<UserDataResponse>
-                        ) {
-                            if (response.isSuccessful) {
-                                response.body()?.let { responseBody ->
-                                    user.value = responseBody
-                                }
-                            } else {
-                                showMessageToUser("Error: ${response.message()}")
-                            }
-                        }
-
-                        override fun onFailure(call: Call<UserDataResponse>, t: Throwable) {
-                            showMessageToUser("Error: ${t.localizedMessage}")
-                        }
-                    })
-                    onDispose {
-                        call.cancel()
-                    }
+                    getUserData()
+                    onDispose {}
                 }
 
                 Column(
@@ -308,35 +274,6 @@ fun AccountContent(
                             Text(text = user.value.user.email, color = contentColor)
                         }
                         HorizontalDivider(color = Color(0xFF222831))
-
-//                        Row(
-//                            modifier = infoRowModifier,
-//                            verticalAlignment = Alignment.CenterVertically,
-//                            horizontalArrangement = Arrangement.SpaceBetween,
-//                        ) {
-//                            Text(text = "Пароль", color = contentColorConst)
-//                            Row(
-//                                verticalAlignment = Alignment.CenterVertically,
-//                                horizontalArrangement = Arrangement.SpaceBetween,
-//                            ) {
-//                                Text(text = "3gsif9slf3", color = contentColor)
-//                                IconButton(onClick = { openEditPassDialog = true }) {
-//                                    Icon(
-//                                        Icons.Filled.Edit,
-//                                        "Edit password",
-//                                        tint = contentColor)
-//                                }
-//                            }
-//                            if(openEditPassDialog) {
-//                                editPassDialog()
-//                            } else {
-//                                if(password != "") {
-//                                    Log.d("debug", password)
-////                                    editPassword(password)
-//                                }
-//                            }
-//                        }
-//                        HorizontalDivider(color = Color(0xFF222831))
 
                         Row(
                             modifier = infoRowModifier,
