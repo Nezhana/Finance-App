@@ -62,7 +62,7 @@ import com.example.financeapp.ui.theme.chartColor7
 import com.example.financeapp.ui.theme.chartColor8
 import com.example.financeapp.ui.theme.chartColor9
 import com.example.financeapp.viewmodel.UserViewModel
-import com.example.pr4_calc.ui.dropdown.DropdownList
+import com.example.financeapp.ui.dropdown.DropdownList
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

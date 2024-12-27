@@ -33,7 +33,7 @@ import com.example.financeapp.ui.theme.CustomTextField
 import com.example.financeapp.ui.theme.CustomTextInknutAntiquaFont
 import com.example.financeapp.ui.theme.CustomTitleInknutAntiquaFont
 import com.example.financeapp.viewmodel.UserViewModel
-import com.example.pr4_calc.ui.dropdown.DropdownList
+import com.example.financeapp.ui.dropdown.DropdownList
 import java.net.SocketTimeoutException
 
 
