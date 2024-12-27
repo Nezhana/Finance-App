@@ -151,14 +151,6 @@ fun StatisticsContent(
         )
     }
 
-
-    //UNUSED
-    // example of using functions for conversion and make chart data:
-    // var valList = listOf(550.0f, 190.0f, 140.0f, 69.0f, 51.0f)
-    // var summa = 1000.0f
-    // var percList = convertSummaToPercentage(summa, valList)
-    // var chartsTemp = makeCharts(percList)
-
     fun showMessageToUser(message: String) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
@@ -197,7 +189,8 @@ fun StatisticsContent(
     }
 
 
-    fun getData(type: String, month: String, year: String){
+    fun getData(type: String, month: Number, year: Number){
+        Log.d("debug", "$type, $month, $year")
         if(type == "Витрати") {
         } else if(type == "Дохід") {
             Log.d("debug", "Statistic init failed 1")
@@ -208,6 +201,10 @@ fun StatisticsContent(
         if (token != null) {
             LaunchedEffect(Unit) {
                 getInitData()
+            }
+
+            LaunchedEffect(selected_type, selectedMonthID, selectedYearID ) {
+                getData(selected_type, selectedMonthID, selectedYearID)
             }
 
             Box() {

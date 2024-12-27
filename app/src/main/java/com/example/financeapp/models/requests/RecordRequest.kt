@@ -7,6 +7,6 @@ data class RecordRequest(
     val method: String,
     val date: String,
     val categoryId: String,
-    val recurrent: Boolean = false,
+    val reccurent: Boolean = false,
     val repeating: String? = null
 )
