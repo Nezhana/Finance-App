@@ -38,6 +38,7 @@ import com.example.financeapp.ui.theme.CustomTextField
 import com.example.financeapp.ui.theme.CustomTextInknutAntiquaFont
 import com.example.financeapp.ui.theme.CustomTitleInknutAntiquaFont
 import com.example.financeapp.viewmodel.UserViewModel
+import org.json.JSONObject
 import java.net.SocketTimeoutException
 
 
@@ -73,11 +74,14 @@ fun LogInScreen(
                     val loginResponse = response.body()
                     loginResponse?.token?.let {
                         userViewModel.setToken(it)
-                        Log.d("debug", "Registration successful: $it")
+                        Log.d("debug", "Login successful: $it")
                         authorizate()
                     }
                 } else {
-                    Log.d("debug", "Registration failed: ${response.errorBody()?.string()}")
+                    val jsonObject = JSONObject(response.errorBody()?.string())
+                    val errorMessage = jsonObject.optString("message", "An error occurred")
+                    showMessageToUser(errorMessage)
+                    Log.d("debug", "Login failed: ${jsonObject}")
                 }
             }
 
