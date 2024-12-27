@@ -1,5 +1,6 @@
 package com.example.financeapp.services
 
+import com.example.financeapp.models.interfaces.Category
 import com.example.financeapp.models.requests.LoginRequest
 import com.example.financeapp.models.requests.PasswordRecoveryRequest
 import com.example.financeapp.models.requests.RegisterRequest
@@ -9,6 +10,7 @@ import com.example.financeapp.models.responses.CurrentBalanceCategoriesResponse
 import com.example.financeapp.models.responses.CurrentBalanceResponse
 import com.example.financeapp.models.responses.GroupResponse
 import com.example.financeapp.models.responses.LoginResponse
+import com.example.financeapp.models.responses.MessageResponse
 import com.example.financeapp.models.responses.PasswordRecoveryResponse
 import com.example.financeapp.models.responses.RegisterResponse
 import com.example.financeapp.models.responses.UserDataResponse
@@ -58,7 +60,8 @@ interface ApiService {
     @DELETE("group/users/")
     fun deleteUser(@Header("Authorization") token: String, @Query("userId") userId: String ): Call<Void>
 
-//    POST	/api/finance/categories/
+    @POST("finance/categories/")
+    fun addCategory(@Header("Authorization") token: String, @Body request: Category): Call<MessageResponse>
 
 //    GET	/api/finance/categories/all/
 

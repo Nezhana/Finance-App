@@ -273,6 +273,34 @@ fun CustomTextField(
     return value
 }
 
+@Composable
+fun CustomTextFieldV2(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    modifier: Modifier,
+    fontSize: TextUnit = 16.sp
+) {
+    TextField(
+        modifier = modifier,
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(label, fontSize = fontSize)},
+        maxLines = 1,
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.background,
+            unfocusedContainerColor = MaterialTheme.colorScheme.background,
+            focusedTextColor = MaterialTheme.colorScheme.primary,
+            unfocusedTextColor = MaterialTheme.colorScheme.secondary,
+            focusedLabelColor = MaterialTheme.colorScheme.secondary,
+            unfocusedLabelColor = MaterialTheme.colorScheme.secondary,
+            focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+            unfocusedIndicatorColor = MaterialTheme.colorScheme.secondary
+        ),
+        textStyle = TextStyle(fontSize = fontSize)
+    )
+}
+
 // ----------------------------------
 
 @Composable
