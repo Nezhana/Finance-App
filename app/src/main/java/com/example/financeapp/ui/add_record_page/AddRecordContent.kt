@@ -3,11 +3,8 @@ package com.example.financeapp.ui.add_record_page
 
 //import android.graphics.Color
 //import com.example.financeapp.ui.theme.CustomCategoryPicker
-import android.annotation.SuppressLint
-import android.os.Build
 import android.util.Log
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -45,25 +42,25 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.financeapp.models.interfaces.PaymentMethod
-import com.example.financeapp.models.responses.CategoriesResponse
+import com.example.financeapp.models.interfaces.Record
+import com.example.financeapp.models.interfaces.RecordType
+import com.example.financeapp.models.interfaces.RepeatingType
+import com.example.financeapp.models.responses.AddRecordResponse
 import com.example.financeapp.models.responses.CurrentBalanceCategoriesResponse
+import com.example.financeapp.models.responses.MessageResponse
 import com.example.financeapp.models.responses.UserDataResponse
 import com.example.financeapp.services.RetrofitClient
 import com.example.financeapp.ui.dropdown.DropdownList
-import com.example.financeapp.ui.dropdown.DropdownListV2
 import com.example.financeapp.ui.theme.CustomChipSelector
 import com.example.financeapp.ui.theme.CustomTextField
 import com.example.financeapp.ui.theme.CustomTextInknutAntiquaFont
 import com.example.financeapp.ui.theme.DatePickerFieldToModal
 import com.example.financeapp.viewmodel.UserViewModel
-import com.example.financeapp.models.interfaces.Record
-import com.example.financeapp.models.interfaces.RecordType
-import com.example.financeapp.models.interfaces.RepeatingType
-import com.example.financeapp.models.responses.AddRecordResponse
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.net.SocketTimeoutException
 
 
 @Composable
@@ -83,7 +80,7 @@ fun AddRecordContent(
     val radioOptions = listOf("Картка", "Готівка")
 
 
-    val currency = remember { mutableStateOf("") }
+    val currency = remember { mutableStateOf("UAH") }
 //    var categories = remember { mutableStateOf<List<CategoriesResponse.CategoryItem>>(emptyList()) }
 //    var categories = mutableListOf<CategoriesResponse.CategoryItem>()
 //    var categories = mutableListOf<String>()
@@ -190,7 +187,7 @@ fun AddRecordContent(
 
 
     fun addRecord() {
-        val newRecord = Record(
+        val request = Record(
             title = recordName,
             type = selectedType,
             value = summa,
@@ -201,17 +198,30 @@ fun AddRecordContent(
             repeating = repeatingRange
         )
 
-        val call = apiService.addRecord("Bearer $token", newRecord)
-        call.enqueue(object : retrofit2.Callback<AddRecordResponse> {
+        apiService.addRecord("Bearer $token", request).enqueue(object : retrofit2.Callback<MessageResponse> {
             override fun onResponse(
-                call: Call<AddRecordResponse>,
-                response: Response<AddRecordResponse>
+                call: Call<MessageResponse>,
+                response: Response<MessageResponse>
             ) {
-                TODO("Not yet implemented")
+                if (response.isSuccessful) {
+                    showMessageToUser("Record added successfully")
+                    mainPage()
+                } else {
+                    val jsonObject = JSONObject(response.errorBody()?.string())
+                    val errorMessage = jsonObject.optString("message", "An error occurred")
+                    showMessageToUser(errorMessage)
+                    Log.d("debug", "Category adding failed: ${response.errorBody()?.string()}")
+                }
             }
 
-            override fun onFailure(call: Call<AddRecordResponse>, t: Throwable) {
-                TODO("Not yet implemented")
+            override fun onFailure(call: Call<MessageResponse>, t: Throwable) {
+                if (t is SocketTimeoutException) {
+                    Log.d("debug", "Timeout error: ${t.message}")
+                    showMessageToUser("The server might be sleeping. Please try again (in 30s).")
+                } else {
+                    Log.d("debug", "Error: ${t.message}")
+                    showMessageToUser("An error occurred: ${t.message}")
+                }
             }
         })
 
@@ -467,7 +477,7 @@ fun AddRecordContent(
                                             "$category, $date, " +
                                             "$repeating, $repeatingRange"
                                 )
-//                                mainPage()
+                                addRecord()
                             }
                         ) {
                             CustomTextInknutAntiquaFont("Додати")
