@@ -34,13 +34,12 @@ import androidx.compose.ui.window.PopupProperties
 import com.example.financeapp.R
 
 @Composable
-fun DropdownList(
+fun DropdownListV2(
     itemList: List<String>,
     selectedIndex: Int,
     modifier: Modifier,
     onItemClick: (Int) -> Unit
 ) {
-
     var showDropdown by rememberSaveable { mutableStateOf(false) }
     val scrollState = rememberScrollState()
     val (inactiveColor, activeColor) = listOf(MaterialTheme.colorScheme.secondary, MaterialTheme.colorScheme.primary)
@@ -49,9 +48,9 @@ fun DropdownList(
     Column(
         modifier = Modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center) {
-
-        // button
+        verticalArrangement = Arrangement.Center
+    ) {
+        // Button
         Box(
             modifier = modifier
                 .background(MaterialTheme.colorScheme.background)
@@ -61,12 +60,10 @@ fun DropdownList(
                 }
                 .height(50.dp)
                 .drawBehind {
-
                     val strokeWidth = 2.0f
                     val y = size.height - strokeWidth / 2
-
                     drawLine(
-                        if(isActive){activeColor}else{inactiveColor},
+                        if (isActive) activeColor else inactiveColor,
                         Offset(0f, y),
                         Offset(size.width, y),
                         strokeWidth
@@ -74,26 +71,25 @@ fun DropdownList(
                 },
             contentAlignment = Alignment.Center
         ) {
-            Row (
+            Row(
                 modifier = Modifier.padding(start = 12.dp).fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = itemList[selectedIndex],
+                    text = if (itemList.isNotEmpty()) itemList.getOrElse(selectedIndex) { "" } else "Select category",
                     modifier = Modifier.padding(3.dp),
-                    color = if(isActive){activeColor}else{inactiveColor}
+                    color = if (isActive) activeColor else inactiveColor
                 )
                 Icon(
                     painter = painterResource(R.drawable.downarrow),
                     contentDescription = "Dropdown Arrow",
                     modifier = Modifier.padding(top = 10.dp),
-                    tint = if(isActive){activeColor}else{inactiveColor}
+                    tint = if (isActive) activeColor else inactiveColor
                 )
             }
-
         }
 
-        // dropdown list
+        // Dropdown List
         Box {
             if (showDropdown) {
                 Popup(
@@ -101,21 +97,18 @@ fun DropdownList(
                     properties = PopupProperties(
                         excludeFromSystemGesture = true,
                     ),
-                    // to dismiss on click outside
                     onDismissRequest = {
                         showDropdown = false
                         isActive = false
                     }
                 ) {
-
                     Column(
                         modifier = modifier
                             .heightIn(max = 90.dp)
                             .verticalScroll(state = scrollState),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-
-                        itemList.onEachIndexed { index, item ->
+                        itemList.forEachIndexed { index, item ->
                             if (index != 0) {
                                 HorizontalDivider(
                                     thickness = 1.dp, color = MaterialTheme.colorScheme.secondary
@@ -140,11 +133,9 @@ fun DropdownList(
                                 )
                             }
                         }
-
                     }
                 }
             }
         }
     }
-
 }

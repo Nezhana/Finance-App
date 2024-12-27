@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import com.example.financeapp.models.responses.GroupResponse
 import com.example.financeapp.services.RetrofitClient
 import com.example.financeapp.viewmodel.UserViewModel
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -95,7 +96,10 @@ fun GroupContent(
                             Log.d("debug", "Group init: ${group.value}")
                         }
                     } else {
-                        showMessageToUser("Error: ${response.message()}")
+                        val jsonObject = JSONObject(response.errorBody()?.string())
+                        val errorMessage = jsonObject.optString("message", "An error occurred")
+                        showMessageToUser(errorMessage)
+                        Log.d("debug", "Editing name failed: ${jsonObject}")
                     }
                 }
 
@@ -116,7 +120,10 @@ fun GroupContent(
                         showMessageToUser("User deleted successfully!")
                         getUsers()
                     } else {
-                        showMessageToUser("Error: ${response.message()}")
+                        val jsonObject = JSONObject(response.errorBody()?.string())
+                        val errorMessage = jsonObject.optString("message", "An error occurred")
+                        showMessageToUser(errorMessage)
+                        Log.d("debug", "Editing name failed: ${jsonObject}")
                     }
                 }
 
@@ -193,7 +200,7 @@ fun GroupContent(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                             ) {
                                 Text(text = user.role, color = contentColor)
-                                if (user.role == "user") { // Use `==` for string comparison
+                                if (user.role == "user") {
                                     IconButton(onClick = { deleteUser(user._id) }) {
                                         Icon(
                                             Icons.Filled.Delete,

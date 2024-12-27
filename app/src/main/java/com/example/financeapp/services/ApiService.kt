@@ -1,17 +1,24 @@
 package com.example.financeapp.services
 
+import com.example.financeapp.models.interfaces.Category
+import com.example.financeapp.models.interfaces.Record
 import com.example.financeapp.models.requests.LoginRequest
 import com.example.financeapp.models.requests.PasswordRecoveryRequest
 import com.example.financeapp.models.requests.RegisterRequest
 import com.example.financeapp.models.requests.UpdateUserRequest
+import com.example.financeapp.models.responses.CategoriesResponse
 import com.example.financeapp.models.responses.CurrenciesResponse
 import com.example.financeapp.models.responses.CurrentBalanceCategoriesResponse
+import com.example.financeapp.models.responses.CurrentBalanceCategoryResponse
 import com.example.financeapp.models.responses.CurrentBalanceResponse
 import com.example.financeapp.models.responses.GroupResponse
 import com.example.financeapp.models.responses.LoginResponse
+import com.example.financeapp.models.responses.MessageResponse
+import com.example.financeapp.models.responses.MonthStatisticsResponse
 import com.example.financeapp.models.responses.PasswordRecoveryResponse
 import com.example.financeapp.models.responses.RegisterResponse
 import com.example.financeapp.models.responses.UserDataResponse
+import com.example.financeapp.models.responses.YearStatisticsResponse
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -58,13 +65,16 @@ interface ApiService {
     @DELETE("group/users/")
     fun deleteUser(@Header("Authorization") token: String, @Query("userId") userId: String ): Call<Void>
 
-//    POST	/api/finance/categories/
+    @POST("finance/categories/")
+    fun addCategory(@Header("Authorization") token: String, @Body request: Category): Call<MessageResponse>
 
-//    GET	/api/finance/categories/all/
+    @GET("/finance/categories/all/")
+    fun getCategories(@Header("Authorization") token: String): Call<CategoriesResponse>
 
 //    DELETE	/api/finance/categories/  @Query("id") id: String
 
-//    POST	/api/finance/records/
+    @POST("finance/records/")
+    fun addRecord(@Header("Authorization") token: String, @Body request: Record): Call<MessageResponse>
 
 //    GET	/api/finance/records/all/
 
@@ -76,8 +86,22 @@ interface ApiService {
     @GET("finance/balance/current/categories/")
     fun getCurrentBalanceCategories(@Header("Authorization") token: String, ): Call<CurrentBalanceCategoriesResponse>
 
-//    @GET("finance/balance/current/category/")
-//    fun getCurrentBalanceCategory(@Header("Authorization") token: String, @Query("categoryId") categoryId: String): Call<CurrentBalanceResponse>
+    @GET("finance/balance/current/category/")
+    fun getCurrentBalanceCategory(@Header("Authorization") token: String, @Query("categoryId") categoryId: String): Call<CurrentBalanceCategoryResponse>
+
+    @GET("statistics/month/")
+    fun getMonthStatisticDefault(@Header("Authorization") token: String, @Query("type") type: String): Call<MonthStatisticsResponse>
+
+    @GET("statistics/month/")
+    fun getMonthStatistic(@Header("Authorization") token: String,
+                          @Query("type") type: String,
+                          @Query("month") month: String,
+                          @Query("year") year: String): Call<MonthStatisticsResponse>
+
+    @GET("statistics/year/")
+    fun getYearStatistic(@Header("Authorization") token: String,
+                         @Query("type") type: String,
+                         @Query("year") year: String): Call<YearStatisticsResponse>
 
 
 }
