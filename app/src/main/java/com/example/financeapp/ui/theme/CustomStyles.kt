@@ -510,7 +510,7 @@ fun ChangeValueDialog(
 @Composable
 fun CustomCategoryCard(
     title: String,
-    total: Number,
+    total: String,
     onClick: () -> Unit
 ) {
     ElevatedCard(
@@ -544,7 +544,7 @@ fun CustomCategoryCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text (
-                    text = "${total} ₴",
+                    text = total,
                     modifier = Modifier.padding(end = 6.dp),
                     textAlign = TextAlign.Center,
                 )

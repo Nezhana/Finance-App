@@ -29,14 +29,13 @@ import com.example.financeapp.viewmodel.UserViewModel
 enum class Routes {
     REGISTRATION,
     AUTHORIZATION,
-    PASSWORD_RECOVERY, // fix logic
+    PASSWORD_RECOVERY,
     MAIN_PAGE,
-    CATEGORY_DETAILS,
     ACCOUNT,
-    GROUP, // I
-    ADD_RECORD,
+    GROUP,
+    ADD_RECORD, // I
     ADD_CATEGORY,
-    STATISTICS,
+    STATISTICS, // I
     COURSE,
 }
 
@@ -79,12 +78,19 @@ fun MainActivityContent() {
                 composable(route = Routes.MAIN_PAGE.name) {
                     val content = MainContent(
                         userViewModel = userViewModel,
-                        categoryDetailsPage = { navController.navigate(route = Routes.CATEGORY_DETAILS.name )},
+                        categoryDetailsPage = { categoryId ->
+                            navController.navigate("category_details/$categoryId")
+                        },
                         addRecordPage = { navController.navigate(route = Routes.ADD_RECORD.name )})
                     Drawer(content, navController)
                 }
-                composable(route = Routes.CATEGORY_DETAILS.name) {
-                    val content = CategoryDetailsContent(userViewModel = userViewModel)
+//                composable(route = Routes.CATEGORY_DETAILS.name) {
+//                    val content = CategoryDetailsContent(userViewModel = userViewModel)
+//                    Drawer(content, navController)
+//                }
+                composable(route = "category_details/{categoryId}") { backStackEntry ->
+                    val categoryId = backStackEntry.arguments?.getString("categoryId") ?: ""
+                    val content = CategoryDetailsContent(userViewModel = userViewModel, categoryId = categoryId)
                     Drawer(content, navController)
                 }
                 composable(route = Routes.ACCOUNT.name) {

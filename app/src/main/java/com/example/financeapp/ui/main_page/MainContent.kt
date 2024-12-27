@@ -61,7 +61,7 @@ import retrofit2.Response
 @OptIn(ExperimentalMaterial3Api::class)
 fun MainContent(
     userViewModel: UserViewModel,
-    categoryDetailsPage: () -> Unit,
+    categoryDetailsPage: (categoryId: String) -> Unit,
     addRecordPage: () -> Unit
 ): @Composable () -> Unit {
 
@@ -191,7 +191,7 @@ fun MainContent(
                                     text= "Дохід"
                                 )
                                 Text(
-                                    text= "+ ${currentBalance.incomeTotal} ₴"
+                                    text= "+ ${currentBalance.incomeTotal} ${currentBalanceCategories.currency}"
                                 )
                             }
                             Row(modifier = Modifier
@@ -202,7 +202,7 @@ fun MainContent(
                                     text= "Витрати"
                                 )
                                 Text(
-                                    text= "- ${currentBalance.expenseTotal} ₴"
+                                    text= "- ${currentBalance.expenseTotal} ${currentBalanceCategories.currency}"
                                 )
                             }
                             Spacer(modifier = Modifier.height(8.dp))
@@ -216,7 +216,7 @@ fun MainContent(
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
-                                    text= "${currentBalance.total} ₴",
+                                    text= "${currentBalance.total} ${currentBalanceCategories.currency}",
                                     fontSize = 30.sp,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -231,10 +231,17 @@ fun MainContent(
                     {
                         items(currentBalanceCategories.categories.size) { index ->
                             val item = currentBalanceCategories.categories[index]
+
+//                            val valueWithSign = when (item.type) {
+//                                "expense" -> "-${item.value}"
+//                                "income" -> "+${item.value}"
+//                                else -> item.value.toString()
+//                            }
+
                             CustomCategoryCard(
                                 title = item.title,
-                                total = item.total,
-                                onClick = categoryDetailsPage
+                                total = "${item.total} ${currentBalanceCategories.currency}",
+                                onClick = { categoryDetailsPage(item.categoryId) }
                             )
                         }
                     }

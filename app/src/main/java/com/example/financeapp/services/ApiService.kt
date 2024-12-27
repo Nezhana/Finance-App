@@ -9,6 +9,7 @@ import com.example.financeapp.models.requests.UpdateUserRequest
 import com.example.financeapp.models.responses.CategoriesResponse
 import com.example.financeapp.models.responses.CurrenciesResponse
 import com.example.financeapp.models.responses.CurrentBalanceCategoriesResponse
+import com.example.financeapp.models.responses.CurrentBalanceCategoryResponse
 import com.example.financeapp.models.responses.CurrentBalanceResponse
 import com.example.financeapp.models.responses.GroupResponse
 import com.example.financeapp.models.responses.LoginResponse
@@ -65,7 +66,7 @@ interface ApiService {
     @POST("finance/categories/")
     fun addCategory(@Header("Authorization") token: String, @Body request: Category): Call<MessageResponse>
 
-    @GET("/api/finance/categories/all/")
+    @GET("/finance/categories/all/")
     fun getCategories(@Header("Authorization") token: String): Call<CategoriesResponse>
 
 //    DELETE	/api/finance/categories/  @Query("id") id: String
@@ -83,8 +84,8 @@ interface ApiService {
     @GET("finance/balance/current/categories/")
     fun getCurrentBalanceCategories(@Header("Authorization") token: String, ): Call<CurrentBalanceCategoriesResponse>
 
-//    @GET("finance/balance/current/category/")
-//    fun getCurrentBalanceCategory(@Header("Authorization") token: String, @Query("categoryId") categoryId: String): Call<CurrentBalanceResponse>
+    @GET("finance/balance/current/category/")
+    fun getCurrentBalanceCategory(@Header("Authorization") token: String, @Query("categoryId") categoryId: String): Call<CurrentBalanceCategoryResponse>
 
 
 }
