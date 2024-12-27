@@ -179,6 +179,8 @@ fun AddRecordContent(
         })
     }
 
+    var tempVal by remember { mutableStateOf("") }
+
     var selectedType by remember { mutableStateOf(RecordType.EXPENSE) } // Дохід/Витрата
     var summa by remember { mutableStateOf(0.0) } // Введене значення
     var selectedMethod by remember { mutableStateOf(PaymentMethod.CASH) } // Картка/Готівка
@@ -189,33 +191,33 @@ fun AddRecordContent(
     var repeatingRange by remember { mutableStateOf(RepeatingType.DAILY) }
 
 
-    fun addRecord() {
-        val newRecord = Record(
-            title = recordName,
-            type = selectedType,
-            value = summa,
-            method = selectedMethod,
-            date = date,
-            categoryId = category,
-            recurrent = repeating,
-            repeating = repeatingRange
-        )
-
-        val call = apiService.addRecord("Bearer $token", newRecord)
-        call.enqueue(object : retrofit2.Callback<AddRecordResponse> {
-            override fun onResponse(
-                call: Call<AddRecordResponse>,
-                response: Response<AddRecordResponse>
-            ) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onFailure(call: Call<AddRecordResponse>, t: Throwable) {
-                TODO("Not yet implemented")
-            }
-        })
-
-    }
+//    fun addRecord() {
+//        val newRecord = Record(
+//            title = recordName,
+//            type = selectedType,
+//            value = summa,
+//            method = selectedMethod,
+//            date = date,
+//            categoryId = category,
+//            recurrent = repeating,
+//            repeating = repeatingRange
+//        )
+//
+//        val call = apiService.addRecord("Bearer $token", newRecord)
+//        call.enqueue(object : retrofit2.Callback<AddRecordResponse> {
+//            override fun onResponse(
+//                call: Call<AddRecordResponse>,
+//                response: Response<AddRecordResponse>
+//            ) {
+//                TODO("Not yet implemented")
+//            }
+//
+//            override fun onFailure(call: Call<AddRecordResponse>, t: Throwable) {
+//                TODO("Not yet implemented")
+//            }
+//        })
+//
+//    }
 
 
     var content = @Composable{
@@ -257,7 +259,7 @@ fun AddRecordContent(
                             horizontalArrangement = Arrangement.Center,
                         ) {
 
-                            summa = CustomTextField("", Modifier.width(100.dp), fontSize = 30.sp).toDouble()
+                            tempVal = CustomTextField("", Modifier.width(100.dp), fontSize = 30.sp)
                             Text(
                                 text = currency.value,
                                 color = MaterialTheme.colorScheme.secondary,
@@ -460,6 +462,7 @@ fun AddRecordContent(
                                 ),
                             border = ButtonDefaults.outlinedButtonBorder(false),
                             onClick = {
+                                summa = tempVal.toDouble()
                                 Log.d(
                                     "debug",
                                     "Output: $selectedType, $summa, " +

@@ -60,6 +60,7 @@ fun AddCategoryContent(
     val apiService = RetrofitClient.apiService
 
     val title = remember { mutableStateOf("") }
+//    val title by remember { mutableStateOf("") }
 
     fun showMessageToUser(message: String) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
