@@ -82,12 +82,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
@@ -99,6 +101,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -106,6 +109,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.Popup
 import com.example.financeapp.R
 import com.example.financeapp.models.responses.CurrentBalanceCategoriesResponse.Category
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -530,7 +534,6 @@ fun CustomCategoryCard(
     }
 }
 
-
 // ----------------------------------
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -592,7 +595,7 @@ fun MonthPicker(
                                     .size(35.dp)
                                     .rotate(90f)
                                     .clickable(
-                                        enabled = if(yearList.indexOf(year) > 0) {
+                                        enabled = if (yearList.indexOf(year) > 0) {
                                             true
                                         } else {
                                             false
@@ -628,7 +631,7 @@ fun MonthPicker(
                                     .size(35.dp)
                                     .rotate(-90f)
                                     .clickable(
-                                        enabled = if(yearList.indexOf(year) < yearList.size - 1) {
+                                        enabled = if (yearList.indexOf(year) < yearList.size - 1) {
                                             true
                                         } else {
                                             false
@@ -953,23 +956,132 @@ fun YearPicker(
 // ----------------------------------
 
 @Composable
-fun CircleStatistics() {
-    Canvas(
-        modifier = Modifier.size(300.dp).background(Color.Gray),
+fun CircleStatistics(
+    modifier: Modifier,
+    charts: List<ChartModel>,
+    size: Dp = 200.dp,
+    strokeWidth: Dp = 16.dp
+) {
+    Canvas(modifier = modifier
+        .size(size)
+//        .background(Color.LightGray)
+        .padding(12.dp),
+
         onDraw = {
-            drawArc(
-                color = Color.Red,
-                startAngle = 0f,
-                sweepAngle = 90f,
-                useCenter = false,
-                style = Stroke(
-                    width = 4f,
-                    cap = StrokeCap.Round,
-                    join = StrokeJoin.Round
+
+            var startAngle = 0f
+            var sweepAngle = 0f
+
+            charts.forEach {
+
+                sweepAngle = (it.value / 100) * 360
+
+                drawArc(
+                    color = it.color,
+                    startAngle = startAngle,
+                    sweepAngle = sweepAngle,
+                    useCenter = false,
+                    style = Stroke(
+                        width = strokeWidth.toPx(),
+//                        cap = StrokeCap.Round,
+//                        join = StrokeJoin.Round
+                    )
                 )
+
+                startAngle += sweepAngle
+            }
+
+        })
+}
+
+data class ChartModel(
+    val value: Float,
+    val color: Color,
+)
+
+// ----------------------------------
+
+@Composable
+fun CustomPercentBar(
+    modifier: Modifier,
+    title1: String,
+    title2: String,
+    half1: Float,
+    df: DecimalFormat
+) {
+    val firstHalfColor = MaterialTheme.colorScheme.primary
+    val secondHalfColor = MaterialTheme.colorScheme.secondary
+
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.SpaceEvenly,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(34.dp)
+                .clip(RoundedCornerShape(50)),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                "${df.format(half1)} %",
+                modifier = Modifier
+                    .weight(0.5f)
+                    .drawBehind {
+                        drawRect(
+                            color = firstHalfColor
+                        )
+                    }
+                    .padding(4.dp),
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.background,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                "${df.format(100.0 - half1)} %",
+                modifier = Modifier
+                    .weight(0.5f)
+                    .drawBehind {
+                        drawRect(
+                            color = secondHalfColor
+                        )
+                    }
+                    .padding(4.dp),
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.background,
+                fontWeight = FontWeight.Bold
             )
         }
-    )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                title1,
+                modifier = Modifier
+                    .weight(0.5f)
+                    .padding(4.dp),
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Medium
+            )
+            Text(
+                title2,
+                modifier = Modifier
+                    .weight(0.5f)
+                    .padding(4.dp),
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.secondary,
+                fontWeight = FontWeight.Medium
+            )
+        }
+    }
+
 }
 
 // ----------------------------------
