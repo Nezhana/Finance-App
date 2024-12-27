@@ -1,10 +1,10 @@
 package com.example.financeapp.models.responses
 
-data class YearStatisticsResponse(
-    val currency: String,
+ data class YearStatisticsResponse(
+    override val currency: String,
     val resolvedYear: Int,
     val total: Double,
-    val categories: List<CategoryStatistics>,
-    val cashPercentage: Double,
-    val cardPercentage: Double
-)
+    override val categories: List<CategoryStatistics>,
+    override val cashPercentage: Double,
+    override val cardPercentage: Double
+) : StatisticsResponse()
