@@ -349,4 +349,3 @@ fun FinanceAppTheme(
         content = content
     )
 }
-

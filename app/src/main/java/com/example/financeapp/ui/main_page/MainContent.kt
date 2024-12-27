@@ -163,10 +163,10 @@ fun MainContent(
                             .size(width = 350.dp, height = 215.dp)
                             .offset(y = 10.dp),
                         colors = CardColors(
-                            containerColor = Color(0xFF00ADB5),
-                            contentColor = Color(0xFFFFFFFF),
-                            disabledContainerColor = Color(0xFF00ADB5),
-                            disabledContentColor = Color(0xFFFFFFFF)
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onSecondary,
+                            disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            disabledContentColor = MaterialTheme.colorScheme.onSecondary
                         ),
                         shape = RoundedCornerShape(15)
                     )
@@ -225,7 +225,7 @@ fun MainContent(
                     }
 
                     LazyColumn(
-                        modifier = Modifier.offset(y=10.dp),
+                        modifier = Modifier.padding(top = 10.dp).offset(y=10.dp),
                         contentPadding = PaddingValues(top = 30.dp)
                     )
                     {
@@ -255,7 +255,7 @@ fun MainContent(
                         FloatingActionButton(
                             onClick = addRecordPage,
                             shape = CircleShape,
-                            containerColor = MaterialTheme.colorScheme.secondary,
+                            containerColor = MaterialTheme.colorScheme.onSecondaryContainer,
                             contentColor = MaterialTheme.colorScheme.onSecondary,
                             elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
                         ) {

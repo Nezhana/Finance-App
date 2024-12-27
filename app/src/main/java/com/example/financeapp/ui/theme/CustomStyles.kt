@@ -1,5 +1,6 @@
 package com.example.financeapp.ui.theme
 
+import android.graphics.drawable.PaintDrawable
 import android.util.Log
 import android.util.MutableBoolean
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -126,7 +127,7 @@ fun CustomChipSelector(
     var selected1 by remember { mutableStateOf(false) }
     var selected2 by remember { mutableStateOf(true) }
     val activeTextColor = MaterialTheme.colorScheme.onSecondary
-    val inactiveTextColor = MaterialTheme.colorScheme.onBackground
+    val inactiveTextColor = MaterialTheme.colorScheme.onPrimary
 
     val chipColors = FilterChipDefaults.filterChipColors(
         containerColor = MaterialTheme.colorScheme.background,
@@ -203,7 +204,7 @@ fun CustomTitleInknutAntiquaFont(
         fontSize = 30.sp,
         fontWeight = FontWeight.Bold,
         fontFamily = additionalFontFamily,
-        color = MaterialTheme.colorScheme.primary
+        color = MaterialTheme.colorScheme.onPrimaryContainer
     )
 }
 
@@ -228,12 +229,12 @@ fun SingleChoiceSegmentedButton(
                 selected = index == selectedIndex,
                 label = { Text(label) },
                 colors = SegmentedButtonDefaults.colors(
-                    activeContainerColor = MaterialTheme.colorScheme.secondary,
+                    activeContainerColor = MaterialTheme.colorScheme.onSecondaryContainer,
                     activeContentColor = MaterialTheme.colorScheme.onSecondary,
-                    activeBorderColor = MaterialTheme.colorScheme.primaryContainer,
+                    activeBorderColor = MaterialTheme.colorScheme.onPrimary,
                     inactiveContainerColor = MaterialTheme.colorScheme.background,
-                    inactiveContentColor = MaterialTheme.colorScheme.primaryContainer,
-                    inactiveBorderColor = MaterialTheme.colorScheme.primaryContainer
+                    inactiveContentColor = MaterialTheme.colorScheme.onPrimary,
+                    inactiveBorderColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
         }
@@ -309,7 +310,11 @@ fun CustomPasswordInput(
     modifier: Modifier,
     fontSize: TextUnit = 16.sp
 ) :String{
+    val colorScheme = MaterialTheme.colorScheme
     var value by remember { mutableStateOf("") }
+    var isVisible by remember { mutableStateOf(false) }
+    var iconImg by remember { mutableStateOf(R.drawable.eye_closed) }
+    var iconTint by remember { mutableStateOf(colorScheme.secondary) }
 
     TextField(
         modifier = modifier,
@@ -328,7 +333,31 @@ fun CustomPasswordInput(
             unfocusedIndicatorColor = MaterialTheme.colorScheme.secondary
         ),
         textStyle = TextStyle(fontSize = fontSize),
-        visualTransformation = PasswordVisualTransformation('\u002A'),
+        visualTransformation = if(isVisible){
+            VisualTransformation.None
+        } else {
+            PasswordVisualTransformation('\u002A')
+               },
+        trailingIcon = {
+            IconButton(
+                onClick = {
+                    isVisible = !isVisible
+                    if(isVisible){
+                        iconImg = R.drawable.eye_open
+                        iconTint = colorScheme.primary
+                    } else {
+                        iconImg = R.drawable.eye_closed
+                        iconTint = colorScheme.secondary
+                    }
+                },
+                modifier = Modifier.size(20.dp)
+            ) {
+                Icon(painter = painterResource(iconImg),
+                    "eye",
+                    modifier = Modifier.size(20.dp),
+                    tint = iconTint)
+            }
+        }
 //        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
     )
 
@@ -556,7 +585,7 @@ fun CustomCategoryCard(
                     Icon(
                         painter = painterResource(R.drawable.rightarrow),
                         contentDescription = "Right Arrow",
-                        tint = MaterialTheme.colorScheme.secondary)
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer)
                 }
             }
 
@@ -1036,11 +1065,13 @@ fun CustomPercentBar(
     modifier: Modifier,
     title1: String,
     title2: String,
-    half1: Double,
-    half2: Double,
+    half1: Double = 50.0,
+    half2: Double = 50.0,
 ) {
-    val firstHalfColor = MaterialTheme.colorScheme.primary
+    val firstHalfColor = MaterialTheme.colorScheme.onPrimaryContainer
     val secondHalfColor = MaterialTheme.colorScheme.secondary
+
+    Log.d("debug", "weight 1: ${(half1/100.0).toFloat()}\tweight 2: ${(half2/100.0).toFloat()}")
 
     Column(
         modifier = modifier,
@@ -1058,7 +1089,7 @@ fun CustomPercentBar(
             Text(
                 "$half1 %",
                 modifier = Modifier
-                    .weight(0.5f)
+                    .weight(makeStableWeigth(half1))
                     .drawBehind {
                         drawRect(
                             color = firstHalfColor
@@ -1072,7 +1103,7 @@ fun CustomPercentBar(
             Text(
                 "$half2 %",
                 modifier = Modifier
-                    .weight(0.5f)
+                    .weight(makeStableWeigth(half2))
                     .drawBehind {
                         drawRect(
                             color = secondHalfColor
@@ -1094,7 +1125,7 @@ fun CustomPercentBar(
             Text(
                 title1,
                 modifier = Modifier
-                    .weight(0.5f)
+                    .weight(makeStableWeigth(half1))
                     .padding(4.dp),
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.primary,
@@ -1103,7 +1134,7 @@ fun CustomPercentBar(
             Text(
                 title2,
                 modifier = Modifier
-                    .weight(0.5f)
+                    .weight(makeStableWeigth(half2))
                     .padding(4.dp),
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.secondary,
@@ -1112,6 +1143,25 @@ fun CustomPercentBar(
         }
     }
 
+}
+
+fun makeStableWeigth(
+    value: Double
+) :Float{
+    var result = 0.0f
+
+    if (value != 0.0) {
+        if(value >= 80) {
+            result = ((value - (value / 5.0)) / 100.0).toFloat()
+        }
+        if(value <= 20) {
+            result = ((value + ((100.0 - value) / 5.0)) / 100.0).toFloat()
+        }
+    } else {
+        result = 0.5f
+    }
+
+    return result
 }
 
 // ----------------------------------

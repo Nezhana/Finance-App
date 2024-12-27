@@ -93,7 +93,7 @@ fun Drawer(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet (
-                drawerContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                drawerContainerColor = MaterialTheme.colorScheme.onPrimary,
                 drawerContentColor = MaterialTheme.colorScheme.onSecondary,
             ) {
                 IconButton(
@@ -152,9 +152,9 @@ fun Drawer(
                 )
             ),
             colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                containerColor = MaterialTheme.colorScheme.onPrimary,
                 navigationIconContentColor = MaterialTheme.colorScheme.primary,
-                scrolledContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                scrolledContainerColor = MaterialTheme.colorScheme.onPrimary,
                 titleContentColor = MaterialTheme.colorScheme.primary,
             ),
             title = {

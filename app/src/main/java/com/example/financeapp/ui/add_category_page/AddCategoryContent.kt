@@ -135,7 +135,7 @@ fun AddCategoryContent(
                     FloatingActionButton(
                         onClick = addRecordPage,
                         shape = CircleShape,
-                        containerColor = MaterialTheme.colorScheme.secondary,
+                        containerColor = MaterialTheme.colorScheme.onSecondaryContainer,
                         contentColor = MaterialTheme.colorScheme.onSecondary,
                         elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
                     ) {

@@ -148,7 +148,7 @@ fun CourseInfoContent(
                                 .fillMaxWidth()
                                 .height(60.dp)
                                 .clip(shape = RoundedCornerShape(50))
-                                .background(color = MaterialTheme.colorScheme.primaryContainer),
+                                .background(color = MaterialTheme.colorScheme.onPrimary),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
@@ -214,7 +214,7 @@ fun CourseInfoContent(
                                 }
                                 HorizontalDivider(
                                     modifier = Modifier.padding(top = 14.dp),
-                                    color = Color(0xFF222831),
+                                    color = MaterialTheme.colorScheme.onPrimary,
                                     thickness = 2.dp
                                 )
                             }

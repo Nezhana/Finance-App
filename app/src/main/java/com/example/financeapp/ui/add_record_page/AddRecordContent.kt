@@ -291,9 +291,9 @@ fun AddRecordContent(
                                         onClick = null, // null recommended for accessibility with screen readers
                                         colors = RadioButtonColors(
                                             selectedColor = MaterialTheme.colorScheme.onSecondary,
-                                            unselectedColor = MaterialTheme.colorScheme.primaryContainer,
+                                            unselectedColor = MaterialTheme.colorScheme.onPrimary,
                                             disabledSelectedColor = MaterialTheme.colorScheme.onSecondary,
-                                            disabledUnselectedColor = MaterialTheme.colorScheme.primaryContainer
+                                            disabledUnselectedColor = MaterialTheme.colorScheme.onPrimary
                                         )
                                     )
                                     Text(
@@ -303,7 +303,7 @@ fun AddRecordContent(
                                         color = if (text == selectedOption) {
                                             MaterialTheme.colorScheme.onSecondary
                                         } else {
-                                            MaterialTheme.colorScheme.primaryContainer
+                                            MaterialTheme.colorScheme.onPrimary
                                         }
                                     )
                                 }
@@ -388,7 +388,7 @@ fun AddRecordContent(
                                 onCheckedChange = { checked = it },
                                 colors = CheckboxDefaults.colors(
                                     checkedColor = MaterialTheme.colorScheme.primary,
-                                    uncheckedColor = MaterialTheme.colorScheme.secondary
+                                    uncheckedColor = MaterialTheme.colorScheme.onSecondaryContainer
                                 )
                             )
                             Text(
@@ -396,7 +396,7 @@ fun AddRecordContent(
                                 color = if (checked) {
                                     MaterialTheme.colorScheme.primary
                                 } else {
-                                    MaterialTheme.colorScheme.secondary
+                                    MaterialTheme.colorScheme.onSecondaryContainer
                                 }
                             )
                         }

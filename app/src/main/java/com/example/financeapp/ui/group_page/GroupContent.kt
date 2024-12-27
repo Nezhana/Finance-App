@@ -213,7 +213,7 @@ fun GroupContent(
                         }
                         HorizontalDivider(
                             modifier = Modifier.padding(top = 6.dp),
-                            color = Color(0xFF222831),
+                            color = MaterialTheme.colorScheme.onPrimary,
                             thickness = 2.dp
                         )
                     }
