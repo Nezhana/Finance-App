@@ -99,12 +99,10 @@ fun AddCategoryContent(
     }
 
     val content = @Composable {
-        Box(modifier = Modifier
-            .padding(top = 80.dp, start = 40.dp, end = 40.dp)
-            .verticalScroll(rememberScrollState()))
+        Box(modifier = Modifier)
         {
             Column(
-                modifier = Modifier,
+                modifier = Modifier.padding(top = 80.dp, start = 40.dp, end = 40.dp),
                 verticalArrangement = Arrangement.SpaceEvenly,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -127,6 +125,7 @@ fun AddCategoryContent(
                     CustomTextInknutAntiquaFont("Додати")
                 }
             }
+
             BottomAppBar(
                 modifier = Modifier.absoluteOffset(y = 786.dp),
                 actions = {},
@@ -141,8 +140,7 @@ fun AddCategoryContent(
                     ) {
                         Icon(painter = painterResource(R.drawable.leftarrow),
                             "Localized description",
-                            tint = MaterialTheme.colorScheme.onSecondary
-                            )
+                        )
                     }
                 }
             )

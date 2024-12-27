@@ -39,6 +39,8 @@ import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.math.RoundingMode
+import java.text.DecimalFormat
 import kotlin.reflect.full.memberProperties
 
 
@@ -54,6 +56,9 @@ fun CourseInfoContent(
         .fillMaxWidth()
         .height(40.dp)
         .padding(top = 10.dp)
+
+    val df = DecimalFormat("##.##")
+    df.roundingMode = RoundingMode.CEILING
 
     val rates = remember {
         mutableStateOf(
@@ -195,7 +200,7 @@ fun CourseInfoContent(
                                             modifier = Modifier
                                                 .weight(0.5f)
                                                 .padding(end = 14.dp),
-                                            text = currency.second.toString(),
+                                            text = "${df.format(currency.second)}",
                                             color = contentColor
                                         )
                                         Text(
