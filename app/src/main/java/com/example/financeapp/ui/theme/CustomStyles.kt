@@ -378,7 +378,7 @@ fun DatePickerModal(
 }
 
 @Composable
-fun DatePickerFieldToModal(modifier: Modifier = Modifier) {
+fun DatePickerFieldToModal(modifier: Modifier = Modifier) :String{
     var selectedDate by remember { mutableStateOf<Long?>(null) }
     var showModal by remember { mutableStateOf(false) }
 
@@ -429,6 +429,8 @@ fun DatePickerFieldToModal(modifier: Modifier = Modifier) {
             onDismiss = { showModal = false }
         )
     }
+
+    return selectedDate?.let { convertMillisToDate(it) } ?: ""
 }
 
 fun convertMillisToDate(millis: Long): String {

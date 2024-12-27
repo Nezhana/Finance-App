@@ -3,8 +3,11 @@ package com.example.financeapp.ui.add_record_page
 
 //import android.graphics.Color
 //import com.example.financeapp.ui.theme.CustomCategoryPicker
+import android.annotation.SuppressLint
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -40,7 +44,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.financeapp.models.interfaces.PaymentMethod
 import com.example.financeapp.models.responses.CategoriesResponse
+import com.example.financeapp.models.responses.CurrentBalanceCategoriesResponse
 import com.example.financeapp.models.responses.UserDataResponse
 import com.example.financeapp.services.RetrofitClient
 import com.example.financeapp.ui.dropdown.DropdownList
@@ -50,6 +56,10 @@ import com.example.financeapp.ui.theme.CustomTextField
 import com.example.financeapp.ui.theme.CustomTextInknutAntiquaFont
 import com.example.financeapp.ui.theme.DatePickerFieldToModal
 import com.example.financeapp.viewmodel.UserViewModel
+import com.example.financeapp.models.interfaces.Record
+import com.example.financeapp.models.interfaces.RecordType
+import com.example.financeapp.models.interfaces.RepeatingType
+import com.example.financeapp.models.responses.AddRecordResponse
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -70,8 +80,16 @@ fun AddRecordContent(
     val activeTextColor = Color(0xFFFFFFFF)
     val inactiveTextColor = Color(0xFF222831)
 
+    val radioOptions = listOf("Картка", "Готівка")
+
+
     val currency = remember { mutableStateOf("") }
-    var categories = remember { mutableStateOf<List<CategoriesResponse.CategoryItem>>(emptyList()) }
+//    var categories = remember { mutableStateOf<List<CategoriesResponse.CategoryItem>>(emptyList()) }
+//    var categories = mutableListOf<CategoriesResponse.CategoryItem>()
+//    var categories = mutableListOf<String>()
+//    var categories by remember { mutableStateOf(mutableListOf<String>()) }
+    val categories = remember { mutableStateListOf<String>() }
+    categories.add("+ Додати категорію")
 
     fun showMessageToUser(message: String) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
@@ -103,31 +121,102 @@ fun AddRecordContent(
         })
     }
 
+//    fun getCategories() {
+//        val call = apiService.getCategories("Bearer $token")
+//        call.enqueue(object : Callback<CategoriesResponse> {
+//            override fun onResponse(
+//                call: Call<CategoriesResponse>,
+//                response: Response<CategoriesResponse>
+//            ) {
+//                if (response.isSuccessful) {
+//                    response.body()?.let { responseBody ->
+//                        responseBody.categories.forEach{ category ->
+//                            categories.add("${category.title}")
+//                        }
+////                        categories = responseBody.categories
+//                        Log.d("debug", "Categories init: ${currency.value}, $responseBody")
+//                    }
+//                } else {
+//                    val jsonObject = JSONObject(response.errorBody()?.string())
+//                    val errorMessage = jsonObject.optString("message", "An error occurred")
+//                    showMessageToUser(errorMessage)
+//                    Log.d("debug", "Editing name failed: $jsonObject")
+//                }
+//            }
+//
+//            override fun onFailure(call: Call<CategoriesResponse>, t: Throwable) {
+//                showMessageToUser("Error: ${t.localizedMessage}")
+//            }
+//        })
+//    }
+
     fun getCategories() {
-        val call = apiService.getCategories("Bearer $token")
-        call.enqueue(object : Callback<CategoriesResponse> {
+        val call = apiService.getCurrentBalanceCategories("Bearer $token")
+        call.enqueue(object : Callback<CurrentBalanceCategoriesResponse> {
             override fun onResponse(
-                call: Call<CategoriesResponse>,
-                response: Response<CategoriesResponse>
+                call: Call<CurrentBalanceCategoriesResponse>,
+                response: Response<CurrentBalanceCategoriesResponse>
             ) {
                 if (response.isSuccessful) {
                     response.body()?.let { responseBody ->
-                        categories.value = responseBody.categories
-                        Log.d("debug", "Categories init: ${currency.value}, ${responseBody}")
+                        Log.d("debug", "Categories API Response: $responseBody")
+                        responseBody.categories.forEach { category ->
+                            categories.add("${category.title}")
+                        }
                     }
+//                    categories.add("+ Додати категорію")
                 } else {
                     val jsonObject = JSONObject(response.errorBody()?.string())
                     val errorMessage = jsonObject.optString("message", "An error occurred")
                     showMessageToUser(errorMessage)
-                    Log.d("debug", "Editing name failed: ${jsonObject}")
+                    Log.d("debug", "Main page init failed 2: ${jsonObject}")
                 }
             }
 
-            override fun onFailure(call: Call<CategoriesResponse>, t: Throwable) {
+            override fun onFailure(call: Call<CurrentBalanceCategoriesResponse>, t: Throwable) {
                 showMessageToUser("Error: ${t.localizedMessage}")
             }
         })
     }
+
+    var selectedType by remember { mutableStateOf(RecordType.EXPENSE) } // Дохід/Витрата
+    var summa by remember { mutableStateOf(0.0) } // Введене значення
+    var selectedMethod by remember { mutableStateOf(PaymentMethod.CASH) } // Картка/Готівка
+    var recordName by remember { mutableStateOf("") } // Назва запису
+    var category by remember { mutableStateOf(categories[0]) }
+    var date by remember { mutableStateOf("") }
+    var repeating by remember { mutableStateOf(false) }
+    var repeatingRange by remember { mutableStateOf(RepeatingType.DAILY) }
+
+
+    fun addRecord() {
+        val newRecord = Record(
+            title = recordName,
+            type = selectedType,
+            value = summa,
+            method = selectedMethod,
+            date = date,
+            categoryId = category,
+            recurrent = repeating,
+            repeating = repeatingRange
+        )
+
+        val call = apiService.addRecord("Bearer $token", newRecord)
+        call.enqueue(object : retrofit2.Callback<AddRecordResponse> {
+            override fun onResponse(
+                call: Call<AddRecordResponse>,
+                response: Response<AddRecordResponse>
+            ) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onFailure(call: Call<AddRecordResponse>, t: Throwable) {
+                TODO("Not yet implemented")
+            }
+        })
+
+    }
+
 
     var content = @Composable{
         if (token != null) {
@@ -155,10 +244,11 @@ fun AddRecordContent(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceEvenly,
                         ) {
-                            var selected by remember { mutableStateOf("") }
 
+                            var selected by remember { mutableStateOf("") }
                             // selected = "Дохід" or "Витрати" - need to convert to income/expense
                             selected = CustomChipSelector(Modifier, "Дохід", "/", "Витрати")
+                            selectedType = if(selected == "Дохід") {RecordType.INCOME} else {RecordType.EXPENSE}
 
                         }
                         Row(
@@ -166,9 +256,8 @@ fun AddRecordContent(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center,
                         ) {
-                            var summa by remember { mutableStateOf("0") }
 
-                            summa = CustomTextField("", Modifier.width(100.dp), fontSize = 30.sp)
+                            summa = CustomTextField("", Modifier.width(100.dp), fontSize = 30.sp).toDouble()
                             Text(
                                 text = currency.value,
                                 color = MaterialTheme.colorScheme.secondary,
@@ -188,7 +277,6 @@ fun AddRecordContent(
                         )
 
                         Row {
-                            val radioOptions = listOf("Картка", "Готівка")
                             val (selectedOption, onOptionSelected) = remember {
                                 mutableStateOf(
                                     radioOptions[0]
@@ -228,6 +316,7 @@ fun AddRecordContent(
                                     )
                                 }
                             }
+                            selectedMethod = if(selectedOption == "Картка") {PaymentMethod.CARD} else {PaymentMethod.CASH}
                         }
                     }
                     Column(
@@ -241,7 +330,7 @@ fun AddRecordContent(
                             color = MaterialTheme.colorScheme.secondary
                         )
 
-                        CustomTextField("", Modifier.padding(0.dp))
+                        recordName = CustomTextField("", Modifier.padding(0.dp))
                     }
                     Column(
                         modifier = Modifier,
@@ -256,27 +345,29 @@ fun AddRecordContent(
 
                         var selectedIndexDrop by rememberSaveable { mutableStateOf(0) }
 
-                        val itemListTemp: List<CategoriesResponse.CategoryItem> = categories.value
+//                        val itemListTemp: List<CategoriesResponse.CategoryItem> = categories
 
-                        val categoryList = categories.value.map { it.title } + "+ Додати категорію"
+//                        val categoryList = categories.map { it.title } + "+ Додати категорію"
+                        Log.d("debug", "LIST: $categories")
 //                        var ind = 0
 //                        while (ind < itemListTemp.size) {
 //                            categoryList += itemListTemp[ind].title
 //                            ind += 1
 //                        }
 
-                        DropdownListV2(
-                            itemList = categoryList,
+                        DropdownList(
+                            itemList = categories,
                             selectedIndex = selectedIndexDrop,
                             modifier = Modifier,
                             onItemClick = { index ->
                                 selectedIndexDrop = index
-                                if (categoryList[selectedIndexDrop] == "+ Додати категорію") {
+                                if (categories[selectedIndexDrop] == "+ Додати категорію") {
                                     Log.d("debug", "add category clicked")
                                     addCategoryPage()
                                 }
                             }
                         )
+                        category = categories[selectedIndexDrop]
 
 //                    CustomCategoryPicker()
                     }
@@ -285,7 +376,7 @@ fun AddRecordContent(
                             .padding(top = 30.dp)
                             .fillMaxWidth()
                     ) {
-                        DatePickerFieldToModal()
+                        date = DatePickerFieldToModal()
                     }
 
                     Box(
@@ -294,6 +385,7 @@ fun AddRecordContent(
                             .fillMaxWidth()
                     ) {
                         var checked by remember { mutableStateOf(false) }
+                        var repeatingTypeUA by remember { mutableStateOf("") }
 
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -320,8 +412,7 @@ fun AddRecordContent(
                             val listRepeation = listOf(
                                 "Щодня",
                                 "Щотижня",
-                                "Поквартально",
-                                "Раз на півроку",
+                                "Щомісяця",
                                 "Щорічно"
                             )
                             var selectedIndexDrop by remember { mutableStateOf(0) }
@@ -333,13 +424,23 @@ fun AddRecordContent(
                                     itemList = listRepeation,
                                     selectedIndex = selectedIndexDrop,
                                     modifier = Modifier,
-                                    onItemClick = { selectedIndexDrop = it }
+                                    onItemClick = {
+                                        selectedIndexDrop = it
+                                        repeatingTypeUA = listRepeation[selectedIndexDrop]
+                                    }
                                 )
                                 CustomTextField("Кількість повторів", Modifier)
                             }
 
                         } else {
                             Log.d("debug", "Repeating is not checked")
+                        }
+                        repeating = checked
+                        when(repeatingTypeUA){
+                            "Щодня" -> repeatingRange = RepeatingType.DAILY
+                            "Щотижня" -> repeatingRange = RepeatingType.WEEKLY
+                            "Щомісяця" -> repeatingRange = RepeatingType.MONTHLY
+                            "Щорічно" -> repeatingRange = RepeatingType.YEARLY
                         }
                     }
 
@@ -358,7 +459,16 @@ fun AddRecordContent(
                                     shape = RoundedCornerShape(25)
                                 ),
                             border = ButtonDefaults.outlinedButtonBorder(false),
-                            onClick = mainPage
+                            onClick = {
+                                Log.d(
+                                    "debug",
+                                    "Output: $selectedType, $summa, " +
+                                            "$selectedMethod, $recordName, " +
+                                            "$category, $date, " +
+                                            "$repeating, $repeatingRange"
+                                )
+//                                mainPage()
+                            }
                         ) {
                             CustomTextInknutAntiquaFont("Додати")
                         }
@@ -372,3 +482,4 @@ fun AddRecordContent(
     return content
 
 }
+
