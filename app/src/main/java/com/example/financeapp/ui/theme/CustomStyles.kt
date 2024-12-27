@@ -1034,8 +1034,8 @@ fun CustomPercentBar(
     modifier: Modifier,
     title1: String,
     title2: String,
-    half1: Float,
-    df: DecimalFormat
+    half1: Double,
+    half2: Double,
 ) {
     val firstHalfColor = MaterialTheme.colorScheme.primary
     val secondHalfColor = MaterialTheme.colorScheme.secondary
@@ -1054,7 +1054,7 @@ fun CustomPercentBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                "${df.format(half1)} %",
+                "$half1 %",
                 modifier = Modifier
                     .weight(0.5f)
                     .drawBehind {
@@ -1068,7 +1068,7 @@ fun CustomPercentBar(
                 fontWeight = FontWeight.Bold
             )
             Text(
-                "${df.format(100.0 - half1)} %",
+                "$half2 %",
                 modifier = Modifier
                     .weight(0.5f)
                     .drawBehind {

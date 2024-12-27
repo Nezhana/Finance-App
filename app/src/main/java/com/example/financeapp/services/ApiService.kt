@@ -14,9 +14,11 @@ import com.example.financeapp.models.responses.CurrentBalanceResponse
 import com.example.financeapp.models.responses.GroupResponse
 import com.example.financeapp.models.responses.LoginResponse
 import com.example.financeapp.models.responses.MessageResponse
+import com.example.financeapp.models.responses.MonthStatisticsResponse
 import com.example.financeapp.models.responses.PasswordRecoveryResponse
 import com.example.financeapp.models.responses.RegisterResponse
 import com.example.financeapp.models.responses.UserDataResponse
+import com.example.financeapp.models.responses.YearStatisticsResponse
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -86,6 +88,20 @@ interface ApiService {
 
     @GET("finance/balance/current/category/")
     fun getCurrentBalanceCategory(@Header("Authorization") token: String, @Query("categoryId") categoryId: String): Call<CurrentBalanceCategoryResponse>
+
+    @GET("statistics/month/")
+    fun getMonthStatisticDefault(@Header("Authorization") token: String, @Query("type") type: String): Call<MonthStatisticsResponse>
+
+    @GET("statistics/month/")
+    fun getMonthStatistic(@Header("Authorization") token: String,
+                          @Query("type") type: String,
+                          @Query("month") month: String,
+                          @Query("year") year: String): Call<MonthStatisticsResponse>
+
+    @GET("statistics/year/")
+    fun getYearStatistic(@Header("Authorization") token: String,
+                         @Query("type") type: String,
+                         @Query("year") year: String): Call<YearStatisticsResponse>
 
 
 }
