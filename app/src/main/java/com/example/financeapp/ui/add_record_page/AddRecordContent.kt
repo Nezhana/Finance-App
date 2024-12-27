@@ -134,9 +134,6 @@ fun AddRecordContent(
                                 )
                             )
                         }
-                        categoriesWithIdSet = responseBody.categories.map { category ->
-                            category.title to category.categoryId
-                        }.toSet()
                     }
                 } else {
                     val jsonObject = JSONObject(response.errorBody()?.string())
@@ -172,8 +169,6 @@ fun AddRecordContent(
         val transformedDate = date.split("/").let { parts ->
             "${parts[1]}.${parts[0]}.${parts[2]}" // Rearrange as MM.DD.YYYY
         }
-        val categoryId = categoriesWithIdSet.find { it.first == category }?.second
-            ?: throw IllegalArgumentException("Category ID not found for title: $category")
 
         val request = RecordRequest(
             title = recordName,
@@ -181,7 +176,7 @@ fun AddRecordContent(
             value = summa,
             method = methodString,
             date = transformedDate,
-            categoryId = categoryId,
+            categoryId = category,
             recurrent = repeating,
             repeating = repeatingString
         )
