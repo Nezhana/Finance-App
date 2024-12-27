@@ -1,8 +1,6 @@
 package com.example.financeapp.ui.add_record_page
 
 
-//import android.graphics.Color
-//import com.example.financeapp.ui.theme.CustomCategoryPicker
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.border
@@ -45,6 +43,7 @@ import com.example.financeapp.models.interfaces.PaymentMethod
 import com.example.financeapp.models.interfaces.Record
 import com.example.financeapp.models.interfaces.RecordType
 import com.example.financeapp.models.interfaces.RepeatingType
+import com.example.financeapp.models.requests.RecordRequest
 import com.example.financeapp.models.responses.AddRecordResponse
 import com.example.financeapp.models.responses.CurrentBalanceCategoriesResponse
 import com.example.financeapp.models.responses.MessageResponse
@@ -81,11 +80,8 @@ fun AddRecordContent(
 
 
     val currency = remember { mutableStateOf("UAH") }
-//    var categories = remember { mutableStateOf<List<CategoriesResponse.CategoryItem>>(emptyList()) }
-//    var categories = mutableListOf<CategoriesResponse.CategoryItem>()
-//    var categories = mutableListOf<String>()
-//    var categories by remember { mutableStateOf(mutableListOf<String>()) }
     val categories = remember { mutableStateListOf<String>() }
+    var categoriesWithIdSet: Set<Pair<String, String>> = emptySet()
     categories.add("+ Додати категорію")
 
     fun showMessageToUser(message: String) {
@@ -118,35 +114,6 @@ fun AddRecordContent(
         })
     }
 
-//    fun getCategories() {
-//        val call = apiService.getCategories("Bearer $token")
-//        call.enqueue(object : Callback<CategoriesResponse> {
-//            override fun onResponse(
-//                call: Call<CategoriesResponse>,
-//                response: Response<CategoriesResponse>
-//            ) {
-//                if (response.isSuccessful) {
-//                    response.body()?.let { responseBody ->
-//                        responseBody.categories.forEach{ category ->
-//                            categories.add("${category.title}")
-//                        }
-////                        categories = responseBody.categories
-//                        Log.d("debug", "Categories init: ${currency.value}, $responseBody")
-//                    }
-//                } else {
-//                    val jsonObject = JSONObject(response.errorBody()?.string())
-//                    val errorMessage = jsonObject.optString("message", "An error occurred")
-//                    showMessageToUser(errorMessage)
-//                    Log.d("debug", "Editing name failed: $jsonObject")
-//                }
-//            }
-//
-//            override fun onFailure(call: Call<CategoriesResponse>, t: Throwable) {
-//                showMessageToUser("Error: ${t.localizedMessage}")
-//            }
-//        })
-//    }
-
     fun getCategories() {
         val call = apiService.getCurrentBalanceCategories("Bearer $token")
         call.enqueue(object : Callback<CurrentBalanceCategoriesResponse> {
@@ -160,13 +127,15 @@ fun AddRecordContent(
                         responseBody.categories.forEach { category ->
                             categories.add("${category.title}")
                         }
+                        categoriesWithIdSet = responseBody.categories.map { category ->
+                            category.title to category.categoryId
+                        }.toSet()
                     }
-//                    categories.add("+ Додати категорію")
                 } else {
                     val jsonObject = JSONObject(response.errorBody()?.string())
                     val errorMessage = jsonObject.optString("message", "An error occurred")
                     showMessageToUser(errorMessage)
-                    Log.d("debug", "Main page init failed 2: ${jsonObject}")
+                    Log.d("debug", "Adding record failed: ${errorMessage}")
                 }
             }
 
@@ -189,15 +158,25 @@ fun AddRecordContent(
 
 
     fun addRecord() {
-        val request = Record(
+
+        val typeString = selectedType.name.lowercase()
+        val methodString = selectedMethod.name.lowercase()
+        val repeatingString = repeatingRange.name.lowercase()
+        val transformedDate = date.split("/").let { parts ->
+            "${parts[1]}.${parts[0]}.${parts[2]}" // Rearrange as MM.DD.YYYY
+        }
+        val categoryId = categoriesWithIdSet.find { it.first == category }?.second
+            ?: throw IllegalArgumentException("Category ID not found for title: $category")
+
+        val request = RecordRequest(
             title = recordName,
-            type = selectedType,
+            type = typeString,
             value = summa,
-            method = selectedMethod,
-            date = date,
-            categoryId = category,
+            method = methodString,
+            date = transformedDate,
+            categoryId = categoryId,
             recurrent = repeating,
-            repeating = repeatingRange
+            repeating = repeatingString
         )
 
         apiService.addRecord("Bearer $token", request).enqueue(object : retrofit2.Callback<MessageResponse> {
@@ -228,7 +207,6 @@ fun AddRecordContent(
         })
 
     }
-
 
     var content = @Composable{
         if (token != null) {
@@ -490,7 +468,6 @@ fun AddRecordContent(
             }
         }
     }
-
 
     return content
 
