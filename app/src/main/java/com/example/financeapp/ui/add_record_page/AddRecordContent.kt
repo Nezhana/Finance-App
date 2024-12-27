@@ -157,6 +157,8 @@ fun AddRecordContent(
     var recordName by remember { mutableStateOf("") } // Назва запису
     var category by remember { mutableStateOf(categoriesWindex[0].id) }
     var date by remember { mutableStateOf("") }
+    var checked by remember { mutableStateOf(false) }
+    var repeatingTypeUA by remember { mutableStateOf("") }
     var repeating by remember { mutableStateOf(false) }
     var repeatingRange by remember { mutableStateOf(RepeatingType.DAILY) }
 
@@ -165,7 +167,7 @@ fun AddRecordContent(
 
         val typeString = selectedType.name.lowercase()
         val methodString = selectedMethod.name.lowercase()
-        val repeatingString = repeatingRange.name.lowercase()
+        val repeatinggRangeString = repeatingRange.name.lowercase()
         val transformedDate = date.split("/").let { parts ->
             "${parts[1]}.${parts[0]}.${parts[2]}" // Rearrange as MM.DD.YYYY
         }
@@ -177,8 +179,8 @@ fun AddRecordContent(
             method = methodString,
             date = transformedDate,
             categoryId = category,
-            recurrent = repeating,
-            repeating = repeatingString
+            reccurent = checked,
+            repeating = repeatinggRangeString
         )
 
         apiService.addRecord("Bearer $token", request).enqueue(object : retrofit2.Callback<MessageResponse> {
@@ -377,9 +379,6 @@ fun AddRecordContent(
                             .padding(top = 30.dp)
                             .fillMaxWidth()
                     ) {
-                        var checked by remember { mutableStateOf(false) }
-                        var repeatingTypeUA by remember { mutableStateOf("") }
-
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
