@@ -1,9 +1,9 @@
 package com.example.financeapp.services
 
 import com.example.financeapp.models.interfaces.Category
-import com.example.financeapp.models.interfaces.Record
 import com.example.financeapp.models.requests.LoginRequest
 import com.example.financeapp.models.requests.PasswordRecoveryRequest
+import com.example.financeapp.models.requests.RecordRequest
 import com.example.financeapp.models.requests.RegisterRequest
 import com.example.financeapp.models.requests.UpdateUserRequest
 import com.example.financeapp.models.responses.CategoriesResponse
@@ -74,7 +74,7 @@ interface ApiService {
 //    DELETE	/api/finance/categories/  @Query("id") id: String
 
     @POST("finance/records/")
-    fun addRecord(@Header("Authorization") token: String, @Body request: Record): Call<MessageResponse>
+    fun addRecord(@Header("Authorization") token: String, @Body request: RecordRequest): Call<MessageResponse>
 
 //    GET	/api/finance/records/all/
 
