@@ -1,6 +1,7 @@
 package com.example.financeapp.ui.add_category_page
 
 
+import android.graphics.drawable.PaintDrawable
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.border
@@ -8,13 +9,21 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.Composable
@@ -25,8 +34,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.financeapp.R
 import com.example.financeapp.models.interfaces.Category
 import com.example.financeapp.models.responses.MessageResponse
 import com.example.financeapp.services.RetrofitClient
@@ -116,6 +127,25 @@ fun AddCategoryContent(
                     CustomTextInknutAntiquaFont("Додати")
                 }
             }
+            BottomAppBar(
+                modifier = Modifier.absoluteOffset(y = 786.dp),
+                actions = {},
+                containerColor = MaterialTheme.colorScheme.background,
+                floatingActionButton = {
+                    FloatingActionButton(
+                        onClick = addRecordPage,
+                        shape = CircleShape,
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onSecondary,
+                        elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
+                    ) {
+                        Icon(painter = painterResource(R.drawable.leftarrow),
+                            "Localized description",
+                            tint = MaterialTheme.colorScheme.onSecondary
+                            )
+                    }
+                }
+            )
         }
     }
 

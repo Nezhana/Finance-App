@@ -75,21 +75,30 @@ fun StatisticsContent(
     val chartColors = listOf(chartColor1, chartColor2, chartColor3, chartColor4,
         chartColor5, chartColor6, chartColor7, chartColor8,
         chartColor9, chartColor10)
-    // for testing color index loop:
-    //            val chartColors = listOf(chartColor1, chartColor2, chartColor3, chartColor4)
 
+    // UNUSED
     // convert values to percents, also need summa
-    fun convertSummaToPercentage(
-        summa: Float,
-        values: List<Float>
+//    fun convertSummaToPercentage(
+//        summa: Float,
+//        values: List<Float>
+//    ) :List<Float>{
+//        // formula: Y% = (Xгрн / summa) * 100%
+//        var persentages = mutableListOf<Float>()
+//        values.forEach{ value ->
+//            val val_to_perc = (value / summa) * 100.0f
+//            persentages.add(val_to_perc)
+//        }
+//        return persentages
+//    }
+
+    fun getPercentageFromResponse(
+        categories: List<CategoryStatistics>
     ) :List<Float>{
-        // formula: Y% = (Xгрн / summa) * 100%
-        var persentages = mutableListOf<Float>()
-        values.forEach{ value ->
-            val val_to_perc = (value / summa) * 100.0f
-            persentages.add(val_to_perc)
+        var percentages = mutableListOf<Float>()
+        categories.forEach{ item ->
+            percentages.add(item.percentage.toFloat())
         }
-        return persentages
+        return percentages
     }
 
     // make data for chart statistics
@@ -143,11 +152,12 @@ fun StatisticsContent(
     }
 
 
+    //UNUSED
     // example of using functions for conversion and make chart data:
-    var valList = listOf(550.0f, 190.0f, 140.0f, 69.0f, 51.0f)
-    var summa = 1000.0f
-    var percList = convertSummaToPercentage(summa, valList)
-    var chartsTemp = makeCharts(percList)
+    // var valList = listOf(550.0f, 190.0f, 140.0f, 69.0f, 51.0f)
+    // var summa = 1000.0f
+    // var percList = convertSummaToPercentage(summa, valList)
+    // var chartsTemp = makeCharts(percList)
 
     fun showMessageToUser(message: String) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
@@ -163,10 +173,11 @@ fun StatisticsContent(
                     if (response.isSuccessful) {
                         response.body()?.let { responseBody ->
 
-                            summa = responseBody.total.toFloat()
-                            valList = responseBody.categories.map { it.total.toFloat() }
-                            percList = convertSummaToPercentage(summa, valList)
-                            chartsTemp = makeCharts(percList)
+                            // UNUSED
+                            // summa = responseBody.total.toFloat()
+                            // valList = responseBody.categories.map { it.total.toFloat() }
+                            // percList = convertSummaToPercentage(summa, valList)
+                            // chartsTemp = makeCharts(percList)
 
                             Log.d("debug", "Statistic init: ${responseBody}")
                             state.value = responseBody
@@ -281,10 +292,14 @@ fun StatisticsContent(
 
                     }
 
+                    // main values used in chart statistics
+                    val chartValues = getPercentageFromResponse(state.value.categories)
+                    val chartData = makeCharts(chartValues)
+
                     // chart component
                     CircleStatistics(
                         modifier = Modifier.padding(top = 30.dp),
-                        charts = chartsTemp,
+                        charts = chartData,
                         size = 200.dp,
                         strokeWidth = 54.dp
                     )
@@ -325,7 +340,7 @@ fun StatisticsContent(
                                         text = "${item.percentage} %",
                                         modifier = Modifier.weight(0.3f),
                                         textAlign = TextAlign.Center,
-                                        color = chartsTemp[idx].color
+                                        color = chartData[idx].color
                                     )
                                     Text (
                                         text = "${item.total} ${state.value.currency}",
