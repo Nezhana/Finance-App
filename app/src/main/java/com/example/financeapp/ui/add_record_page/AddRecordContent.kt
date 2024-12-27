@@ -81,12 +81,10 @@ fun AddRecordContent(
 
 
     val currency = remember { mutableStateOf("UAH") }
-//    var categories = remember { mutableStateOf<List<CategoriesResponse.CategoryItem>>(emptyList()) }
-//    var categories = mutableListOf<CategoriesResponse.CategoryItem>()
-//    var categories = mutableListOf<String>()
-//    var categories by remember { mutableStateOf(mutableListOf<String>()) }
-    val categories = remember { mutableStateListOf<String>() }
-    categories.add("+ Додати категорію")
+//    val categories = remember { mutableStateListOf<String>() }
+//    categories.add("+ Додати категорію")
+    val categoriesWindex = remember { mutableStateListOf<CategoryIndexing>() }
+    categoriesWindex.add(CategoryIndexing("34567ijh345678vhj", "+ Додати категорію"))
 
     fun showMessageToUser(message: String) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
@@ -118,34 +116,6 @@ fun AddRecordContent(
         })
     }
 
-//    fun getCategories() {
-//        val call = apiService.getCategories("Bearer $token")
-//        call.enqueue(object : Callback<CategoriesResponse> {
-//            override fun onResponse(
-//                call: Call<CategoriesResponse>,
-//                response: Response<CategoriesResponse>
-//            ) {
-//                if (response.isSuccessful) {
-//                    response.body()?.let { responseBody ->
-//                        responseBody.categories.forEach{ category ->
-//                            categories.add("${category.title}")
-//                        }
-////                        categories = responseBody.categories
-//                        Log.d("debug", "Categories init: ${currency.value}, $responseBody")
-//                    }
-//                } else {
-//                    val jsonObject = JSONObject(response.errorBody()?.string())
-//                    val errorMessage = jsonObject.optString("message", "An error occurred")
-//                    showMessageToUser(errorMessage)
-//                    Log.d("debug", "Editing name failed: $jsonObject")
-//                }
-//            }
-//
-//            override fun onFailure(call: Call<CategoriesResponse>, t: Throwable) {
-//                showMessageToUser("Error: ${t.localizedMessage}")
-//            }
-//        })
-//    }
 
     fun getCategories() {
         val call = apiService.getCurrentBalanceCategories("Bearer $token")
@@ -158,7 +128,13 @@ fun AddRecordContent(
                     response.body()?.let { responseBody ->
                         Log.d("debug", "Categories API Response: $responseBody")
                         responseBody.categories.forEach { category ->
-                            categories.add("${category.title}")
+//                            categories.add("${category.title}")
+                            categoriesWindex.add(
+                                CategoryIndexing(
+                                id = "${category.categoryId}",
+                                title = "${category.title}"
+                                )
+                            )
                         }
                     }
 //                    categories.add("+ Додати категорію")
@@ -182,7 +158,7 @@ fun AddRecordContent(
     var summa by remember { mutableStateOf(0.0) } // Введене значення
     var selectedMethod by remember { mutableStateOf(PaymentMethod.CASH) } // Картка/Готівка
     var recordName by remember { mutableStateOf("") } // Назва запису
-    var category by remember { mutableStateOf(categories[0]) }
+    var category by remember { mutableStateOf(categoriesWindex[0].id) }
     var date by remember { mutableStateOf("") }
     var repeating by remember { mutableStateOf(false) }
     var repeatingRange by remember { mutableStateOf(RepeatingType.DAILY) }
@@ -228,7 +204,6 @@ fun AddRecordContent(
         })
 
     }
-
 
     var content = @Composable{
         if (token != null) {
@@ -359,8 +334,8 @@ fun AddRecordContent(
 
 //                        val itemListTemp: List<CategoriesResponse.CategoryItem> = categories
 
-//                        val categoryList = categories.map { it.title } + "+ Додати категорію"
-                        Log.d("debug", "LIST: $categories")
+                        val categoryList = categoriesWindex.map { it.title }
+                        Log.d("debug", "LIST: $categoriesWindex")
 //                        var ind = 0
 //                        while (ind < itemListTemp.size) {
 //                            categoryList += itemListTemp[ind].title
@@ -368,18 +343,19 @@ fun AddRecordContent(
 //                        }
 
                         DropdownList(
-                            itemList = categories,
+//                            itemList = categories,
+                            itemList = categoryList,
                             selectedIndex = selectedIndexDrop,
                             modifier = Modifier,
                             onItemClick = { index ->
                                 selectedIndexDrop = index
-                                if (categories[selectedIndexDrop] == "+ Додати категорію") {
+                                if (categoriesWindex[selectedIndexDrop].title == "+ Додати категорію") {
                                     Log.d("debug", "add category clicked")
                                     addCategoryPage()
                                 }
                             }
                         )
-                        category = categories[selectedIndexDrop]
+                        category = categoriesWindex[selectedIndexDrop].id
 
 //                    CustomCategoryPicker()
                     }
@@ -496,3 +472,7 @@ fun AddRecordContent(
 
 }
 
+data class CategoryIndexing(
+    val id: String,
+    val title: String
+)
