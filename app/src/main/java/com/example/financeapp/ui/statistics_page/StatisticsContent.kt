@@ -36,10 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.financeapp.models.responses.CategoryStatistics
-<<<<<<< HEAD
-=======
 import com.example.financeapp.models.responses.MonthStatisticsResponse
->>>>>>> 5056b9b3ed8c216793a927704cda023734db9964
 import com.example.financeapp.models.responses.StatisticsResponse
 import com.example.financeapp.models.responses.YearStatisticsResponse
 import com.example.financeapp.services.RetrofitClient
