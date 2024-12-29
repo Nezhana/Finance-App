@@ -31,13 +31,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.financeapp.models.responses.MonthStatisticsResponse
 import com.example.financeapp.models.responses.CategoryStatistics
+<<<<<<< HEAD
+=======
+import com.example.financeapp.models.responses.MonthStatisticsResponse
+>>>>>>> 5056b9b3ed8c216793a927704cda023734db9964
 import com.example.financeapp.models.responses.StatisticsResponse
 import com.example.financeapp.models.responses.YearStatisticsResponse
 import com.example.financeapp.services.RetrofitClient
@@ -63,8 +65,6 @@ import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.math.RoundingMode
-import java.text.DecimalFormat
 
 
 @Composable
@@ -288,7 +288,7 @@ fun StatisticsContent(
                                     confirmButtonCLicked = { month_, year_ ->
                                         selectedMonthID = month_
                                         selectedYearID = year_
-                                        Log.d("debug", "$month_/$year_")
+//                                        Log.d("debug", "$month_/$year_")
                                         monthPickerVisibility = false
                                     },
                                     cancelClicked = {
@@ -312,7 +312,7 @@ fun StatisticsContent(
                                     currentYear = selectedYearID,
                                     confirmButtonCLicked = { year_ ->
                                         selectedYearID = year_
-                                        Log.d("debug", "$year_")
+//                                        Log.d("debug", "$year_")
                                         yearPickerVisibility = false
                                     },
                                     cancelClicked = {
@@ -342,8 +342,12 @@ fun StatisticsContent(
                     LazyColumn(
                         modifier = Modifier.padding(top = 40.dp).height(162.dp)
                     ) {
-                        items(state.value.categories.size) { idx ->
-                            val item = state.value.categories[idx]
+                        items(
+                            (state.value.categories as? List<CategoryStatistics>)?.size ?: 0
+                        ) { idx ->
+                            val categoryList = state.value.categories as? List<CategoryStatistics>
+                            val item = categoryList?.get(idx)
+                            if (item != null) {
                             ElevatedCard(
                                 elevation = CardDefaults.cardElevation(
                                     defaultElevation = 6.dp
@@ -375,7 +379,7 @@ fun StatisticsContent(
                                         textAlign = TextAlign.Center,
                                         color = chartData[idx].color
                                     )
-                                    Text (
+                                    Text(
                                         text = "${item.total} ${state.value.currency}",
                                         modifier = Modifier.weight(0.3f),
                                         textAlign = TextAlign.Center,
@@ -383,6 +387,7 @@ fun StatisticsContent(
                                 }
                             }
                         }
+                    }
                     }
                     Column(
                         modifier = Modifier.padding(top = 40.dp)
