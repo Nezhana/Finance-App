@@ -65,9 +65,14 @@ fun MainContent(
     addRecordPage: () -> Unit
 ): @Composable () -> Unit {
 
+    val monthList = listOf("Січень", "Лютий", "Березень", "Квітень", "Травень",
+        "Червень", "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень")
+
     var content = @Composable{
 
-        Box() {
+        Box(
+            contentAlignment = Alignment.BottomEnd
+        ) {
             val context = LocalContext.current
             val token by userViewModel.token.observeAsState()
             val apiService = RetrofitClient.apiService
@@ -94,6 +99,8 @@ fun MainContent(
                 )
             }
 
+            var month by remember { mutableStateOf(monthList[0]) }
+
             fun showMessageToUser(message: String) {
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             }
@@ -110,6 +117,7 @@ fun MainContent(
                             if (response.isSuccessful) {
                                 response.body()?.let {
                                     currentBalance = it
+                                    month = monthList[it.currentMonth.toInt() - 1]
                                 }
                             } else {
                                 val jsonObject = JSONObject(response.errorBody()?.string())
@@ -172,7 +180,7 @@ fun MainContent(
                     )
                     {
                         Text(
-                            text = "Актуальний місяць",
+                            text = "$month",
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 20.dp),
@@ -225,7 +233,7 @@ fun MainContent(
                     }
 
                     LazyColumn(
-                        modifier = Modifier.padding(top = 10.dp).offset(y=10.dp),
+                        modifier = Modifier.padding(top = 20.dp).offset(y=0.dp).height(420.dp),
                         contentPadding = PaddingValues(top = 30.dp)
                     )
                     {
@@ -248,7 +256,7 @@ fun MainContent(
                 }
         
                 BottomAppBar(
-                    modifier = Modifier.absoluteOffset(y = 786.dp),
+                    modifier = Modifier.padding(top = 40.dp),
                     actions = {},
                     containerColor = MaterialTheme.colorScheme.background,
                     floatingActionButton = {

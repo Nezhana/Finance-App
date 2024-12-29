@@ -100,51 +100,59 @@ fun AddCategoryContent(
     }
 
     val content = @Composable {
-        Box(modifier = Modifier)
+        Box(
+            modifier = Modifier,
+            contentAlignment = Alignment.BottomEnd
+        )
         {
-            Column(
-                modifier = Modifier.padding(top = 80.dp, start = 40.dp, end = 40.dp),
-                verticalArrangement = Arrangement.SpaceEvenly,
-                horizontalAlignment = Alignment.CenterHorizontally
+            Column (
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                CustomTextFieldV2(
-                    value = title.value,
-                    onValueChange = { title.value = it },
-                    label = "Назва категорії",
-                    modifier = Modifier,
-                    fontSize = 20.sp
-                )
-                Spacer(modifier = Modifier.height(40.dp))
-                OutlinedButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
-                        .border(2.dp, color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(25)),
-                    border = ButtonDefaults.outlinedButtonBorder(false),
-                    onClick = { addCategory() }
+                Column(
+                    modifier = Modifier.padding(top = 80.dp, start = 40.dp, end = 40.dp).weight(0.3f),
+                    verticalArrangement = Arrangement.SpaceEvenly,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    CustomTextInknutAntiquaFont("Додати")
-                }
-            }
-
-            BottomAppBar(
-                modifier = Modifier.absoluteOffset(y = 786.dp),
-                actions = {},
-                containerColor = MaterialTheme.colorScheme.background,
-                floatingActionButton = {
-                    FloatingActionButton(
-                        onClick = addRecordPage,
-                        shape = CircleShape,
-                        containerColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onSecondary,
-                        elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
+                    CustomTextFieldV2(
+                        value = title.value,
+                        onValueChange = { title.value = it },
+                        label = "Назва категорії",
+                        modifier = Modifier,
+                        fontSize = 20.sp
+                    )
+                    Spacer(modifier = Modifier.height(40.dp))
+                    OutlinedButton(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
+                            .border(2.dp, color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(25)),
+                        border = ButtonDefaults.outlinedButtonBorder(false),
+                        onClick = { addCategory() }
                     ) {
-                        Icon(painter = painterResource(R.drawable.leftarrow),
-                            "Localized description",
-                        )
+                        CustomTextInknutAntiquaFont("Додати")
                     }
                 }
-            )
+                Spacer(modifier = Modifier.weight(0.55f))
+
+                BottomAppBar(
+                    modifier = Modifier.padding(top = 40.dp).weight(0.15f),
+                    actions = {},
+                    containerColor = MaterialTheme.colorScheme.background,
+                    floatingActionButton = {
+                        FloatingActionButton(
+                            onClick = addRecordPage,
+                            shape = CircleShape,
+                            containerColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onSecondary,
+                            elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
+                        ) {
+                            Icon(painter = painterResource(R.drawable.leftarrow),
+                                "Localized description",
+                            )
+                        }
+                    }
+                )
+            }
         }
     }
 

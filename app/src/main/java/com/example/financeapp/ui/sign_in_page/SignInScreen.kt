@@ -139,7 +139,7 @@ fun SignInScreen(
                     .padding(bottom = 10.dp),
                 onClick = logInScreen,
             ) {
-                Text("Увійти в обліковий запис")
+                Text("Увійти в обліковий запис", color = MaterialTheme.colorScheme.secondary)
             }
         }
     }

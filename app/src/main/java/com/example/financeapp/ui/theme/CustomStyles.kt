@@ -82,10 +82,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
@@ -94,12 +96,15 @@ import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -142,13 +147,18 @@ fun CustomChipSelector(
             selected2 = !selected2
           },
         label = {
-            Text(option1Text, color = if(selected1) {activeTextColor} else {inactiveTextColor}, fontSize = fontSize)
+            Text(option1Text,
+                color = if(selected1) {activeTextColor} else {inactiveTextColor},
+                fontSize = fontSize,
+                modifier = if(selected1) {Modifier.alpha(1.0f)} else {Modifier.alpha(0.4f)}
+            )
         },
         selected = selected1,
         colors = chipColors,
         border = FilterChipDefaults.filterChipBorder(
             true,
-            true)
+            true),
+        enabled = if(selected1) {false} else {true}
     )
 
     Text(text = separator, color = Color(0xFF00ADB5), fontSize = fontSize)
@@ -160,12 +170,16 @@ fun CustomChipSelector(
             selected2 = !selected2
         },
         label = {
-            Text(option2Text, color = if(selected2) {activeTextColor} else {inactiveTextColor}, fontSize = fontSize)
+            Text(option2Text,
+                color = if(selected2) {activeTextColor} else {inactiveTextColor}, fontSize = fontSize,
+                modifier = if(selected2) {Modifier.alpha(1.0f)} else {Modifier.alpha(0.4f)}
+            )
         },
         colors = chipColors,
         border = FilterChipDefaults.filterChipBorder(
             true,
-            true)
+            true),
+        enabled = if(selected2) {false} else {true}
     )
 
     if(selected1){
@@ -1018,9 +1032,17 @@ fun YearPicker(
 fun CircleStatistics(
     modifier: Modifier,
     charts: List<ChartModel>,
+    centeredTitle: String,
     size: Dp = 200.dp,
     strokeWidth: Dp = 16.dp
 ) {
+
+    val myText = centeredTitle
+    val textMeasurer = rememberTextMeasurer()
+    val textLayoutResult = textMeasurer.measure(text = AnnotatedString(myText))
+    val textSize = textLayoutResult.size
+    val textColor = MaterialTheme.colorScheme.secondary
+
     Canvas(modifier = modifier
         .size(size)
 //        .background(Color.LightGray)
@@ -1049,6 +1071,15 @@ fun CircleStatistics(
 
                 startAngle += sweepAngle
             }
+
+            drawText(
+                textMeasurer, myText,
+                topLeft = Offset(
+                    (this.size.width - textSize.width) / 2f,
+                    (this.size.height - textSize.height) / 2f
+                ),
+                style = TextStyle(color = textColor, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            )
 
         })
 }
@@ -1152,10 +1183,10 @@ fun makeStableWeigth(
 
     if (value != 0.0) {
         if(value >= 80) {
-            result = ((value - (value / 5.0)) / 100.0).toFloat()
+            result = ((value - (value / 4.5)) / 100.0).toFloat()
         }
         if(value <= 20) {
-            result = ((value + ((100.0 - value) / 5.0)) / 100.0).toFloat()
+            result = ((value + ((100.0 - value) / 4.5)) / 100.0).toFloat()
         }
     } else {
         result = 0.5f

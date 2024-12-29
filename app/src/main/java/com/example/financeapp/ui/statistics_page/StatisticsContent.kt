@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -37,6 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.financeapp.models.responses.MonthStatisticsResponse
 import com.example.financeapp.models.responses.CategoryStatistics
+import com.example.financeapp.models.responses.StatisticsResponse
+import com.example.financeapp.models.responses.YearStatisticsResponse
 import com.example.financeapp.services.RetrofitClient
 import com.example.financeapp.ui.theme.ChartModel
 import com.example.financeapp.ui.theme.CircleStatistics
@@ -76,25 +79,10 @@ fun StatisticsContent(
         chartColor5, chartColor6, chartColor7, chartColor8,
         chartColor9, chartColor10)
 
-    // UNUSED
-    // convert values to percents, also need summa
-//    fun convertSummaToPercentage(
-//        summa: Float,
-//        values: List<Float>
-//    ) :List<Float>{
-//        // formula: Y% = (Xгрн / summa) * 100%
-//        var persentages = mutableListOf<Float>()
-//        values.forEach{ value ->
-//            val val_to_perc = (value / summa) * 100.0f
-//            persentages.add(val_to_perc)
-//        }
-//        return persentages
-//    }
-
     fun getPercentageFromResponse(
         categories: List<CategoryStatistics>
     ) :List<Float>{
-        var percentages = mutableListOf<Float>()
+        val percentages = mutableListOf<Float>()
         categories.forEach{ item ->
             percentages.add(item.percentage.toFloat())
         }
@@ -106,7 +94,7 @@ fun StatisticsContent(
     fun makeCharts(
         values: List<Float>
     ) :List<ChartModel>{
-        var chartList = mutableListOf<ChartModel>()
+        val chartList = mutableListOf<ChartModel>()
         var colorInd = 0
         for (i in 0..(values.size - 1)) {
             if (i > (chartColors.size - 1)) {
@@ -129,11 +117,11 @@ fun StatisticsContent(
     var selected_type by remember { mutableStateOf("") }
     val choises = listOf("Місяць", "Рік")
     var selected_range by remember { mutableStateOf(choises[0]) }
-    var selectedMonthID by remember { mutableStateOf(11) }
-    var selectedYearID by remember { mutableStateOf(yearList.size - 1) }
+    var selectedMonthID by remember { mutableIntStateOf(11) }
+    var selectedYearID by remember { mutableIntStateOf(yearList.size - 1) }
 
     val state = remember {
-        mutableStateOf(
+        mutableStateOf<StatisticsResponse>(
             MonthStatisticsResponse(
                 currency = "EUR",
                 resolvedMonth = 1,
@@ -156,7 +144,40 @@ fun StatisticsContent(
     }
 
     fun getInitData() {
-            val call = apiService.getMonthStatisticDefault("Bearer $token", type="expense")
+        val call = apiService.getMonthStatisticDefault("Bearer $token", type="expense")
+        call.enqueue(object : Callback<MonthStatisticsResponse> {
+            override fun onResponse(
+                call: Call<MonthStatisticsResponse>,
+                response: Response<MonthStatisticsResponse>
+            ) {
+                if (response.isSuccessful) {
+                    response.body()?.let { responseBody ->
+                        Log.d("debug", "Statistic init: ${responseBody}")
+                        state.value = responseBody
+                    }
+                } else {
+                    val jsonObject = JSONObject(response.errorBody()?.string())
+                    val errorMessage = jsonObject.optString("message", "An error occurred")
+                    showMessageToUser(errorMessage)
+                    Log.d("debug", "Statistic init failed: ${jsonObject}")
+                }
+            }
+
+            override fun onFailure(call: Call<MonthStatisticsResponse>, t: Throwable) {
+                showMessageToUser("Error: ${t.localizedMessage}")
+            }
+        })
+    }
+
+    fun getData(type: String, month: Number, year: String){
+        val queryType = when (type) {
+            "Витрати" -> "expense"
+            "Дохід" -> "income"
+            else -> throw IllegalArgumentException("Invalid type: $type")
+        }
+
+        if(selected_range == "Місяць"){
+            val call =  apiService.getMonthStatistic("Bearer $token", type=queryType, month=month, year=year )
             call.enqueue(object : Callback<MonthStatisticsResponse> {
                 override fun onResponse(
                     call: Call<MonthStatisticsResponse>,
@@ -164,13 +185,6 @@ fun StatisticsContent(
                 ) {
                     if (response.isSuccessful) {
                         response.body()?.let { responseBody ->
-
-                            // UNUSED
-                            // summa = responseBody.total.toFloat()
-                            // valList = responseBody.categories.map { it.total.toFloat() }
-                            // percList = convertSummaToPercentage(summa, valList)
-                            // chartsTemp = makeCharts(percList)
-
                             Log.d("debug", "Statistic init: ${responseBody}")
                             state.value = responseBody
                         }
@@ -178,7 +192,7 @@ fun StatisticsContent(
                         val jsonObject = JSONObject(response.errorBody()?.string())
                         val errorMessage = jsonObject.optString("message", "An error occurred")
                         showMessageToUser(errorMessage)
-                        Log.d("debug", "Statistic init failed: ${jsonObject}")
+                        Log.d("debug", "Statistic MONTH failed: ${jsonObject}")
                     }
                 }
 
@@ -186,15 +200,36 @@ fun StatisticsContent(
                     showMessageToUser("Error: ${t.localizedMessage}")
                 }
             })
-    }
 
+        } else if (selected_range == "Рік") {
+            val call =  apiService.getYearStatistic("Bearer $token", type=queryType, year=year)
+            call.enqueue(object : Callback<YearStatisticsResponse> {
+                override fun onResponse(
+                    call: Call<YearStatisticsResponse>,
+                    response: Response<YearStatisticsResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        response.body()?.let { responseBody ->
+                            Log.d("debug", "Statistic init: ${responseBody}")
+                            state.value = responseBody
+                        }
+                    } else {
+                        val jsonObject = JSONObject(response.errorBody()?.string())
+                        val errorMessage = jsonObject.optString("message", "An error occurred")
+                        showMessageToUser(errorMessage)
+                        Log.d("debug", "Statistic YEAR failed: ${jsonObject}")
+                    }
+                }
 
-    fun getData(type: String, month: Number, year: Number){
-        Log.d("debug", "$type, $month, $year")
-        if(type == "Витрати") {
-        } else if(type == "Дохід") {
-            Log.d("debug", "Statistic init failed 1")
+                override fun onFailure(call: Call<YearStatisticsResponse>, t: Throwable) {
+                    showMessageToUser("Error: ${t.localizedMessage}")
+                }
+            })
         }
+
+        Log.d("debug", "call: $selected_range, type: $queryType, month: $month, year: $year")
+        Log.d("debug", "token: $token")
+
     }
 
     val content = @Composable{
@@ -203,8 +238,8 @@ fun StatisticsContent(
                 getInitData()
             }
 
-            LaunchedEffect(selected_type, selectedMonthID, selectedYearID ) {
-                getData(selected_type, selectedMonthID, selectedYearID)
+            LaunchedEffect(selected_range, selected_type, selectedMonthID, selectedYearID ) {
+                getData(selected_type, selectedMonthID+1, yearList[selectedYearID])
             }
 
             Box() {
@@ -297,6 +332,7 @@ fun StatisticsContent(
                     CircleStatistics(
                         modifier = Modifier.padding(top = 30.dp),
                         charts = chartData,
+                        centeredTitle = "${state.value.total}",
                         size = 200.dp,
                         strokeWidth = 54.dp
                     )

@@ -95,7 +95,7 @@ interface ApiService {
     @GET("statistics/month/")
     fun getMonthStatistic(@Header("Authorization") token: String,
                           @Query("type") type: String,
-                          @Query("month") month: String,
+                          @Query("month") month: Number,
                           @Query("year") year: String): Call<MonthStatisticsResponse>
 
     @GET("statistics/year/")

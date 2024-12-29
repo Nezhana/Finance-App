@@ -34,6 +34,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
@@ -73,17 +74,15 @@ fun AddRecordContent(
     val token by userViewModel.token.observeAsState()
     val apiService = RetrofitClient.apiService
 
-    val activeTextColor = Color(0xFFFFFFFF)
-    val inactiveTextColor = Color(0xFF222831)
-
     val radioOptions = listOf("Картка", "Готівка")
 
 
     val currency = remember { mutableStateOf("UAH") }
-//    val categories = remember { mutableStateListOf<String>() }
-//    categories.add("+ Додати категорію")
-    val categoriesWindex = remember { mutableStateListOf<CategoryIndexing>() }
-    categoriesWindex.add(CategoryIndexing("34567ijh345678vhj", "+ Додати категорію"))
+    val categoriesWindex = remember {
+        mutableStateListOf<CategoryIndexing>(
+            CategoryIndexing("34567ijh345678vhj", "+ Додати категорію")
+        )
+    }
 
     fun showMessageToUser(message: String) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
@@ -276,6 +275,7 @@ fun AddRecordContent(
                                     radioOptions[0]
                                 )
                             }
+
                             radioOptions.forEach { text ->
                                 Row(
                                     Modifier
@@ -296,12 +296,27 @@ fun AddRecordContent(
                                             unselectedColor = MaterialTheme.colorScheme.onPrimary,
                                             disabledSelectedColor = MaterialTheme.colorScheme.onSecondary,
                                             disabledUnselectedColor = MaterialTheme.colorScheme.onPrimary
-                                        )
+                                        ),
+                                        modifier = if(text == selectedOption) {
+                                            Modifier
+                                                .alpha(1.0f)
+                                        } else {
+                                            Modifier
+                                                .alpha(0.4f)
+                                        },
                                     )
                                     Text(
                                         text = text,
                                         style = MaterialTheme.typography.bodyLarge,
-                                        modifier = Modifier.padding(start = 16.dp),
+                                        modifier = if(text == selectedOption) {
+                                            Modifier
+                                                .padding(start = 16.dp)
+                                                .alpha(1.0f)
+                                        } else {
+                                            Modifier
+                                                .padding(start = 16.dp)
+                                                .alpha(0.4f)
+                                        },
                                         color = if (text == selectedOption) {
                                             MaterialTheme.colorScheme.onSecondary
                                         } else {

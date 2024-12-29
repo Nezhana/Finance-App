@@ -131,7 +131,7 @@ fun PasswordRecoveryScreen(
                     .fillMaxWidth(),
                 onClick = logInScreen
             ) {
-                Text("Увійти в обліковй запис")
+                Text("Увійти в обліковй запис", color = MaterialTheme.colorScheme.secondary)
             }
             TextButton(
                 modifier = Modifier
@@ -139,7 +139,7 @@ fun PasswordRecoveryScreen(
                     .padding(bottom = 10.dp),
                 onClick = signInScreen
             ) {
-                Text("Створити обліковй запис")
+                Text("Створити обліковй запис", color = MaterialTheme.colorScheme.secondary)
             }
         }
     }
