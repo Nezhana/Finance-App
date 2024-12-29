@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absoluteOffset
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -106,11 +107,14 @@ fun AddCategoryContent(
         )
         {
             Column (
+                modifier = Modifier
+                    .padding(top = 0.dp, start = 30.dp, end = 30.dp, bottom = 10.dp)
+                    .fillMaxHeight(),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Column(
-                    modifier = Modifier.padding(top = 80.dp, start = 40.dp, end = 40.dp).weight(0.3f),
-                    verticalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier.weight(0.8f),
+                    verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     CustomTextFieldV2(
@@ -132,26 +136,31 @@ fun AddCategoryContent(
                         CustomTextInknutAntiquaFont("Додати")
                     }
                 }
-                Spacer(modifier = Modifier.weight(0.55f))
+//                Spacer(modifier = Modifier.weight(0.55f))
 
-                BottomAppBar(
-                    modifier = Modifier.padding(top = 40.dp).weight(0.15f),
-                    actions = {},
-                    containerColor = MaterialTheme.colorScheme.background,
-                    floatingActionButton = {
-                        FloatingActionButton(
-                            onClick = addRecordPage,
-                            shape = CircleShape,
-                            containerColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onSecondary,
-                            elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
-                        ) {
-                            Icon(painter = painterResource(R.drawable.leftarrow),
-                                "Localized description",
-                            )
+                Column(
+                    modifier = Modifier.weight(0.2f),
+                    verticalArrangement = Arrangement.Bottom
+                ) {
+                    BottomAppBar(
+                        modifier = Modifier,
+                        actions = {},
+                        containerColor = MaterialTheme.colorScheme.background,
+                        floatingActionButton = {
+                            FloatingActionButton(
+                                onClick = addRecordPage,
+                                shape = CircleShape,
+                                containerColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onSecondary,
+                                elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
+                            ) {
+                                Icon(painter = painterResource(R.drawable.leftarrow),
+                                    "Localized description",
+                                )
+                            }
                         }
-                    }
-                )
+                    )
+                }
             }
         }
     }

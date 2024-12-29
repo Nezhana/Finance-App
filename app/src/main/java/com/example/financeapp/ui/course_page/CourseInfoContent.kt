@@ -161,15 +161,20 @@ fun CourseInfoContent(
                             )
                             Row(
                                 modifier = Modifier
-                                    .weight(0.5f)
-                                    .padding(horizontal = 20.dp, vertical = 20.dp),
+                                    .weight(0.5f),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    modifier = Modifier.padding(end = 14.dp),
+                                    modifier = Modifier.weight(0.5f),
                                     text = "Купівля",
                                     color = contentColorConst
                                 )
-                                Text(text = "Продаж", color = contentColorConst)
+                                Text(
+                                    modifier = Modifier.weight(0.5f),
+                                    text = "Продаж",
+                                    color = contentColorConst
+                                )
                             }
                         }
 

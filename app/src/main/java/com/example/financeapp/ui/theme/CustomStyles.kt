@@ -742,8 +742,6 @@ fun MonthPicker(
                         FlowRow(
                             modifier = Modifier.fillMaxWidth(),
                             maxItemsInEachRow = 3,
-//                            mainAxisSpacing = 16.dp,
-//                            crossAxisSpacing = 16.dp,
                             horizontalArrangement = Arrangement.Center,
                             verticalArrangement = Arrangement.Center
                         ) {
@@ -751,7 +749,7 @@ fun MonthPicker(
                             months.forEach {
                                 Box(
                                     modifier = Modifier
-                                        .size(80.dp)
+                                        .size(height = 80.dp, width = 90.dp)
                                         .clickable(
                                             indication = null,
                                             interactionSource = interactionSource,

@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -97,23 +98,31 @@ fun PasswordRecoveryScreen(
         })
     }
 
-    Column(modifier = Modifier.padding(60.dp, 60.dp),
+    Column(modifier = Modifier
+        .padding(top = 0.dp, start = 60.dp, end = 60.dp, bottom = 10.dp)
+        .fillMaxHeight(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally) {
-        CustomTitleInknutAntiquaFont(
-            text = "FINANCE",
-            modifier = Modifier.padding(0.dp, 40.dp)
-        )
-        name = CustomTextField("Ім'я", Modifier)
-        email = CustomTextField("Електронна пошта", Modifier)
-        DropdownList(currency, selectedIndexDrop, buttonModifier, onItemClick = {
-            selectedIndexDrop = it
-            val choosed_currency = currency[it]
-        })
-        Column(modifier = Modifier.padding(0.dp, 100.dp),
+        Column(
+            modifier = Modifier.weight(0.7f),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally)
-        {
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            CustomTitleInknutAntiquaFont(
+                text = "FINANCE",
+                modifier = Modifier.padding(0.dp, 20.dp)
+            )
+            name = CustomTextField("Ім'я", Modifier)
+            email = CustomTextField("Електронна пошта", Modifier)
+            DropdownList(currency, selectedIndexDrop, buttonModifier, onItemClick = {
+                selectedIndexDrop = it
+                val choosed_currency = currency[it]
+            })
+        }
+        Column(modifier = Modifier.weight(0.3f),
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             OutlinedButton(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -131,15 +140,14 @@ fun PasswordRecoveryScreen(
                     .fillMaxWidth(),
                 onClick = logInScreen
             ) {
-                Text("Увійти в обліковй запис", color = MaterialTheme.colorScheme.secondary)
+                Text("Увійти в обліковий запис", color = MaterialTheme.colorScheme.secondary)
             }
             TextButton(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 10.dp),
+                    .fillMaxWidth(),
                 onClick = signInScreen
             ) {
-                Text("Створити обліковй запис", color = MaterialTheme.colorScheme.secondary)
+                Text("Створити обліковий запис", color = MaterialTheme.colorScheme.secondary)
             }
         }
     }

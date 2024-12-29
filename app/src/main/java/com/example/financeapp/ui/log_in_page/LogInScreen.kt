@@ -7,6 +7,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -97,24 +98,36 @@ fun LogInScreen(
         })
     }
 
-    Column(modifier = Modifier.padding(60.dp, 60.dp),
-        verticalArrangement = Arrangement.Center,
+    Column(modifier = Modifier
+        .padding(top = 0.dp, start = 60.dp, end = 60.dp, bottom = 10.dp)
+        .fillMaxHeight(),
+        verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally) {
-        CustomTitleInknutAntiquaFont(
-            text = "FINANCE",
-            modifier = Modifier.padding(0.dp, 40.dp)
-        )
-        email = CustomTextField("Email", Modifier)
-        password = CustomPasswordInput("Password", Modifier)
-        Column(modifier = Modifier.padding(0.dp, 100.dp),
+        Column (
+            modifier = Modifier.weight(0.8f),
             verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            CustomTitleInknutAntiquaFont(
+                text = "FINANCE",
+                modifier = Modifier.padding(0.dp, 20.dp)
+            )
+            email = CustomTextField("Email", Modifier)
+            password = CustomPasswordInput("Password", Modifier)
+        }
+        Column(modifier = Modifier.weight(0.8f),
+            verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.CenterHorizontally)
         {
             OutlinedButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 10.dp)
-                    .border(2.dp, color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(25)),
+                    .border(
+                        2.dp,
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(25)
+                    ),
                 border = ButtonDefaults.outlinedButtonBorder(false),
                 onClick = { 
                     loginUser()
@@ -131,8 +144,7 @@ fun LogInScreen(
             }
             TextButton(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 10.dp),
+                    .fillMaxWidth(),
                 onClick = signInScreen
             ) {
                 Text("Створити обліковий запис", color = MaterialTheme.colorScheme.secondary)

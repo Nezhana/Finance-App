@@ -2,31 +2,43 @@ package com.example.financeapp.ui.sign_in_page
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.window.core.layout.WindowHeightSizeClass
 import com.example.financeapp.models.requests.RegisterRequest
 import com.example.financeapp.models.responses.RegisterResponse
 import com.example.financeapp.services.RetrofitClient
@@ -102,25 +114,38 @@ fun SignInScreen(
         })
     }
 
-    Column(modifier = Modifier.padding(60.dp, 60.dp),
-        verticalArrangement = Arrangement.Center,
+    val scrollState = rememberScrollState()
+    val scope = rememberCoroutineScope()
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+
+    Column(modifier = Modifier
+        .padding(top = 0.dp, start = 60.dp, end = 60.dp, bottom = 10.dp)
+        .fillMaxHeight(),
+        verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally) {
-        CustomTitleInknutAntiquaFont(
-            text = "FINANCE",
-            modifier = Modifier.padding(0.dp, 40.dp)
-        )
-        name = CustomTextField("Ім'я", Modifier)
-        email = CustomTextField("Email", Modifier)
-        password = CustomPasswordInput("Password", Modifier)
-        DropdownList(currency, selectedIndexDrop, buttonModifier, onItemClick = {
-            selectedIndexDrop = it
-            val choosed_currency = currency[it]
-        })
-        referalCode = CustomTextField("Реферальний код", Modifier)
-        Column(modifier = Modifier.padding(0.dp, 100.dp).height(300.dp),
+        Column (
+            modifier = Modifier.weight(0.8f),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally)
-        {
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            CustomTitleInknutAntiquaFont(
+                text = "FINANCE",
+                modifier = Modifier.padding(0.dp, 20.dp)
+            )
+            name = CustomTextField("Ім'я", Modifier)
+            email = CustomTextField("Email", Modifier)
+            password = CustomPasswordInput("Password", Modifier)
+            DropdownList(currency, selectedIndexDrop, buttonModifier, onItemClick = {
+                selectedIndexDrop = it
+                val choosed_currency = currency[it]
+            })
+            referalCode = CustomTextField("Реферальний код", Modifier)
+        }
+        Column(
+            modifier = Modifier.weight(0.2f),
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             OutlinedButton(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -135,8 +160,7 @@ fun SignInScreen(
             }
             TextButton(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 10.dp),
+                    .fillMaxWidth(),
                 onClick = logInScreen,
             ) {
                 Text("Увійти в обліковий запис", color = MaterialTheme.colorScheme.secondary)

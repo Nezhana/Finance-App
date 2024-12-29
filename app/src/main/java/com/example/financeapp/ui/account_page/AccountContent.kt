@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.absoluteOffset
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -220,8 +221,10 @@ fun AccountContent(
                 }
 
                 Column(
-                    modifier = Modifier.padding(40.dp, 100.dp),
-                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .padding(top = 60.dp, start = 30.dp, end = 30.dp, bottom = 10.dp)
+                        .fillMaxHeight(),
+                    verticalArrangement = Arrangement.SpaceBetween,
                     horizontalAlignment = Alignment.CenterHorizontally
                 )
                 {
@@ -231,10 +234,15 @@ fun AccountContent(
                         fontSize = 32.sp,
                         modifier = Modifier
                             .padding(0.dp, 20.dp)
+                            .weight(0.16f)
                             .fillMaxWidth(),
                         color = contentColor
                     )
-                    Column {
+                    Column(
+                        modifier = Modifier.weight(0.42f),
+                        verticalArrangement = Arrangement.Top,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
                         Row(
                             modifier = infoRowModifier,
                             verticalAlignment = Alignment.CenterVertically,
@@ -306,34 +314,39 @@ fun AccountContent(
                         HorizontalDivider(color = Color(0xFF222831))
                     }
 
-                    OutlinedButton(
-                        modifier = Modifier
-                            .absoluteOffset(y = 310.dp)
-                            .fillMaxWidth()
-                            .border(
-                                2.dp,
-                                color = MaterialTheme.colorScheme.primary,
-                                shape = RoundedCornerShape(25)
-                            ),
-                        onClick = { logOut() },
-                        border = ButtonDefaults.outlinedButtonBorder(false)
+                    Column(
+                        modifier = Modifier.weight(0.3f),
+                        verticalArrangement = Arrangement.Bottom,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        CustomTextInknutAntiquaFont(text = "Вийти з облікового запису")
-                    }
+                        OutlinedButton(
+                            modifier = Modifier
+                                .padding(bottom = 10.dp)
+                                .fillMaxWidth()
+                                .border(
+                                    2.dp,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    shape = RoundedCornerShape(25)
+                                ),
+                            onClick = { logOut() },
+                            border = ButtonDefaults.outlinedButtonBorder(false)
+                        ) {
+                            CustomTextInknutAntiquaFont(text = "Вийти з облікового запису")
+                        }
 
-                    OutlinedButton(
-                        modifier = Modifier
-                            .absoluteOffset(y = 320.dp)
-                            .fillMaxWidth()
-                            .border(
-                                2.dp,
-                                color = MaterialTheme.colorScheme.primary,
-                                shape = RoundedCornerShape(25)
-                            ),
-                        onClick = { delete() },
-                        border = ButtonDefaults.outlinedButtonBorder(false)
-                    ) {
-                        CustomTextInknutAntiquaFont(text = "Видалити акаунт")
+                        OutlinedButton(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .border(
+                                    2.dp,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    shape = RoundedCornerShape(25)
+                                ),
+                            onClick = { delete() },
+                            border = ButtonDefaults.outlinedButtonBorder(false)
+                        ) {
+                            CustomTextInknutAntiquaFont(text = "Видалити акаунт")
+                        }
                     }
                 }
             }

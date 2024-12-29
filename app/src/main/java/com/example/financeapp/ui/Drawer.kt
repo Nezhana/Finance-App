@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,6 +24,7 @@ import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -144,7 +146,7 @@ fun Drawer(
         gesturesEnabled = false
     )
     {
-        TopAppBar(
+        CenterAlignedTopAppBar(
             modifier = Modifier.clip(
                 RoundedCornerShape(
                     bottomStartPercent = 50,
@@ -158,15 +160,17 @@ fun Drawer(
                 titleContentColor = MaterialTheme.colorScheme.primary,
             ),
             title = {
-                CustomTextInknutAntiquaFont(
-                    text = "Finance",
-                    modifier = Modifier
-                        .padding(start = 180.dp)
-                        .offset(y = 0.dp),
-//                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-
-                )
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Spacer(modifier = Modifier.weight(0.5f))
+                    CustomTextInknutAntiquaFont(
+                        text = "Finance",
+                        modifier = Modifier.weight(0.5f),
+//                        .padding(start = 100.dp),
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             },
             navigationIcon = {
                 IconButton(
