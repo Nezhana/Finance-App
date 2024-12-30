@@ -298,7 +298,7 @@ fun AccountContent(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
-                            Text(text = "Реферальний код", color = contentColorConst)
+                            Text(text = "Код групи", color = contentColorConst)
                             Text(text = user.value.user.referalCode, color = contentColor)
                         }
                         HorizontalDivider(color = Color(0xFF222831))

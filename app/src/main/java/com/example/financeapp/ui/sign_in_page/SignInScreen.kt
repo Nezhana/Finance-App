@@ -139,7 +139,7 @@ fun SignInScreen(
                 selectedIndexDrop = it
                 val choosed_currency = currency[it]
             })
-            referalCode = CustomTextField("Реферальний код", Modifier)
+            referalCode = CustomTextField("Код групи", Modifier)
         }
         Column(
             modifier = Modifier.weight(0.2f),

@@ -1102,6 +1102,7 @@ fun CustomPercentBar(
 
     Log.d("debug", "weight 1: ${(half1/100.0).toFloat()}\tweight 2: ${(half2/100.0).toFloat()}")
 
+
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.SpaceEvenly,
@@ -1118,7 +1119,9 @@ fun CustomPercentBar(
             Text(
                 "$half1 %",
                 modifier = Modifier
-                    .weight(makeStableWeigth(half1))
+                    .weight(
+                        makeStableWeigth(half1)
+                    )
                     .drawBehind {
                         drawRect(
                             color = firstHalfColor
@@ -1132,7 +1135,9 @@ fun CustomPercentBar(
             Text(
                 "$half2 %",
                 modifier = Modifier
-                    .weight(makeStableWeigth(half2))
+                    .weight(
+                        makeStableWeigth(half2)
+                    )
                     .drawBehind {
                         drawRect(
                             color = secondHalfColor
@@ -1154,7 +1159,9 @@ fun CustomPercentBar(
             Text(
                 title1,
                 modifier = Modifier
-                    .weight(makeStableWeigth(half1))
+                    .weight(
+                        makeStableWeigth(half1)
+                    )
                     .padding(4.dp),
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.primary,
@@ -1163,7 +1170,9 @@ fun CustomPercentBar(
             Text(
                 title2,
                 modifier = Modifier
-                    .weight(makeStableWeigth(half2))
+                    .weight(
+                        makeStableWeigth(half2)
+                    )
                     .padding(4.dp),
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.secondary,
@@ -1179,6 +1188,8 @@ fun makeStableWeigth(
 ) :Float{
     var result = 0.0f
 
+    Log.d("debug", "Val: ${value}")
+
     if (value != 0.0) {
         if(value >= 80) {
             result = ((value - (value / 4.5)) / 100.0).toFloat()
@@ -1186,9 +1197,13 @@ fun makeStableWeigth(
         if(value <= 20) {
             result = ((value + ((100.0 - value) / 4.5)) / 100.0).toFloat()
         }
+        else {
+            result = (value / 100.0).toFloat()
+        }
     } else {
         result = 0.5f
     }
+    Log.d("debug", "Weigth: ${result}")
 
     return result
 }
